@@ -1,0 +1,18 @@
+1.PATH COMAPISON : this can be a problem:
+            this can be a problem:
+                    ./test_app
+                    test_app
+                    /home/achraf/project/secure-runtime/test_app
+            These can point to the same file but look different as strings.
+            Later we will improve this using:
+                    std::fs::canonicalize()
+
+2.HASH CALCULATING : This is okay for V1:
+            let file_bytes = std::fs::read(app_path)
+            It reads the whole file into memory. Later, for big files, we can improve it by reading the file in chunks. But for now, it is totally fine.
+
+3.FUNCTION RETURN : This works, but later we should improve it professionally using:
+                Result<T, String>
+
+             For example:
+                pub fn load_policy(path: &str) -> Result<Policy, String> 

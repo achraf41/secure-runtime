@@ -1,0 +1,12 @@
+{
+  "app_id": "test_app",
+  "app_path": "./test_app",
+  "app_hash": "efad8da2be9bcbaf0346dc98969fdf58a6576d69d8d7bd44dfa7cf3f3e3476fa",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": ["./sandbox/input"],
+    "write_allow": ["./sandbox/output"],
+    "deny": ["/etc", "/root", "/home/achraf/.ssh"]
+  }
+}

@@ -1,0 +1,7 @@
+target/
+logs/*
+!logs/.gitkeep
+
+*.log
+.env
+.DS_Store
