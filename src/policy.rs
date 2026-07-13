@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct FileSystemPolicy {
     pub read_allow: Vec<String>,
     pub write_allow: Vec<String>,
+    pub exec_allow: Vec<String>,
     pub deny: Vec<String>,
 }
 #[derive(Debug, Serialize, Deserialize)]
@@ -37,9 +38,8 @@ pub fn load_policy(path: &str) -> Result<Policy, String> {
     if !policy.default_action.eq("allow") && !policy.default_action.eq("deny") {
         return Err(format!("Invalid default action in policy: {}", policy.default_action));    }
     
-    println!("Loaded policy: {:?}", policy);
 
-    if policy.filesystem.read_allow.is_empty() && policy.filesystem.write_allow.is_empty() && policy.filesystem.deny.is_empty() {
+    if policy.filesystem.read_allow.is_empty() && policy.filesystem.write_allow.is_empty() && policy.filesystem.deny.is_empty() && policy.filesystem.exec_allow.is_empty() {
         return Err("File system policy is empty".to_string());
     }
 

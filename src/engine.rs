@@ -1,5 +1,5 @@
 use std::path::{Path, PathBuf};
-use crate::policy::{Policy, FileSystemPolicy};
+use crate::policy::{Policy};
 
 #[derive(Debug, PartialEq)]
 pub enum Decision {
@@ -34,6 +34,15 @@ fn canonicalize_target_for_action(action: &str, target_path: &str) -> Result<Pat
 
                 std::fs::canonicalize(parent)
                     .map_err(|err| format!("Parent path can't be canonicalized for write: {}", err))
+            }
+        }
+
+        "execute" => {
+            if target.exists() {
+                std::fs::canonicalize(target)
+                    .map_err(|err| format!("Target path can't be canonicalized to execute: {}", err))
+            } else {
+                Err(format!("Target path does not exist for execute: {}", target_path))
             }
         }
 
@@ -78,6 +87,12 @@ pub fn decide_file_access(
             }
         }
 
+        "execute" => {
+            if path_is_inside_any(&canonical_target, &policy.filesystem.exec_allow)? {
+                return Ok(Decision::Allow);
+            }
+        }
+
         _ => return Ok(Decision::Deny),
     }
 
@@ -103,6 +118,7 @@ mod tests {
             filesystem: FileSystemPolicy {
                 read_allow: vec!["sandbox/input".to_string()],
                 write_allow: vec!["sandbox/output".to_string()],
+                exec_allow: vec![],
                 deny: vec![],
             },
         };
@@ -125,6 +141,7 @@ mod tests {
             filesystem: FileSystemPolicy {
                 read_allow: vec!["sandbox/input".to_string()],
                 write_allow: vec!["sandbox/output".to_string()],
+                exec_allow: vec![],
                 deny: vec![],
             },
         };
@@ -143,6 +160,7 @@ mod tests {
             filesystem: FileSystemPolicy {
                 read_allow: vec!["sandbox/input".to_string()],
                 write_allow: vec!["sandbox/output".to_string()],
+                exec_allow: vec![],
                 deny: vec![],
             },
         };
@@ -161,6 +179,7 @@ mod tests {
             filesystem: FileSystemPolicy {
                 read_allow: vec!["sandbox/input".to_string()],
                 write_allow: vec!["sandbox/output".to_string()],
+                exec_allow: vec![],
                 deny: vec![],
             },
         };

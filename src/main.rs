@@ -12,10 +12,8 @@ use cli::check_cli;
 use policy::load_policy;
 use identity::check_identity;
 use logger::log_security_event;
-use runner::run_app;
-use engine::decide_file_access;
-use sandbox::prepare_sandbox;
-
+use runner::run_app_sandboxed;
+use sandbox::{prepare_sandbox, SandboxConfig};
 fn main() {
     
     let args: Vec<String> = std::env::args().collect();
@@ -55,12 +53,15 @@ fn main() {
     }
 
 
-    match prepare_sandbox(&policy) {
-        Ok(()) => {
+    let config: SandboxConfig =match prepare_sandbox(&policy) {
+        Ok((config)) => {
             log_security_event(&policy.app_id,"sandbox_prepare","allow",&format!("Filesystem sandbox policy prepared successfully"),0.0);
+            config
         },
         Err(err) => {
             log_security_event(&policy.app_id,"sandbox_prepare","deny",&format!("Sandbox faild to prepared : {}",err),1.0);
+            eprintln!("Sandbox preparation failed : {}",err);
+            std::process::exit(1);
 
         }
     };
@@ -68,7 +69,7 @@ fn main() {
 
     log_security_event(&policy.app_id, "app_start", "allow", "Executing application", 0.0);
     
-    match run_app(&app_path) {
+    match run_app_sandboxed(&policy.app_path, config) {
         Ok(status) => {
             if status.success() {
                 log_security_event(&policy.app_id, "app_exit", "allow", &format!("App executed with status: {}", status), 0.0);

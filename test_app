@@ -1,2 +1,14 @@
 #!/bin/bash
 echo "Hello from sandboxed app"
+
+echo "Allowed read:"
+cat sandbox/input/data.txt
+
+echo "Forbidden read:"
+cat /etc/passwd
+
+echo "Allowed write:"
+echo "result" > sandbox/output/result.txt
+
+echo "Forbidden write:"
+echo "bad" > sandbox/input/bad.txt
