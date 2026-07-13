@@ -13,7 +13,7 @@ use policy::load_policy;
 use identity::check_identity;
 use logger::log_security_event;
 use runner::run_app_sandboxed;
-use sandbox::{prepare_sandbox, SandboxConfig};
+use sandbox::prepare_sandbox;
 fn main() {
     
     let args: Vec<String> = std::env::args().collect();
@@ -53,8 +53,8 @@ fn main() {
     }
 
 
-    let config: SandboxConfig =match prepare_sandbox(&policy) {
-        Ok((config)) => {
+    let config =match prepare_sandbox(&policy) {
+        Ok(config) => {
             log_security_event(&policy.app_id,"sandbox_prepare","allow",&format!("Filesystem sandbox policy prepared successfully"),0.0);
             config
         },
@@ -67,9 +67,9 @@ fn main() {
     };
 
 
-    log_security_event(&policy.app_id, "app_start", "allow", "Executing application", 0.0);
+    log_security_event(&policy.app_id, "app_spawn_attempt", "allow", "Executing application", 0.0);
     
-    match run_app_sandboxed(&policy.app_path, config) {
+    match run_app_sandboxed(&app_path, config) {
         Ok(status) => {
             if status.success() {
                 log_security_event(&policy.app_id, "app_exit", "allow", &format!("App executed with status: {}", status), 0.0);

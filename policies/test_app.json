@@ -1,7 +1,7 @@
 {
   "app_id": "test_app",
   "app_path": "./test_app",
-  "app_hash": "709b56314bcdc22b2df17017117987113e1f7f7a4a81b62473246ce318a6a8d1",
+  "app_hash": "fe9bed97cae636c4022f24d18cd2dbd36efa2dde61f6bf5b7a3ae8d2bc6cdc8b",
   "default_action": "deny",
 
   "filesystem": {
@@ -13,7 +13,7 @@
 	"/etc/ld.so.cache"
     ],
     "write_allow": ["./sandbox/output"],
-    "exec_allow": ["./test_app", "/bin/bash", "/usr/bin/bash","/usr/bin/cat"],
+    "exec_allow": ["./test_app"],
     "deny": ["/etc", "/root", "/home/achraf/.ssh"]
   }
 }

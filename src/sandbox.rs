@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::policy::Policy;
 
 use landlock::{
@@ -10,40 +12,41 @@ use landlock::{
     RulesetCreatedAttr,
     RulesetStatus,
 };
+#[derive(Debug, Clone)]
 
 pub struct SandboxConfig {
-    pub read_allow: Vec<String>,
-    pub write_allow: Vec<String>,
-    pub exec_allow: Vec<String>,
+    pub read_allow: Vec<PathBuf>,
+    pub write_allow: Vec<PathBuf>,
+    pub exec_allow: Vec<PathBuf>,
 }
 
+fn canonicalize_path_list(label: &str, paths: &[String]) -> Result<Vec<PathBuf>, String> {
+    let mut canonical_paths = Vec::new();
 
+    for path in paths {
+        let canonical_path = std::fs::canonicalize(path)
+            .map_err(|err| format!("Invalid {} path '{}': {}", label, path, err))?;
+
+        canonical_paths.push(canonical_path);
+    }
+
+    Ok(canonical_paths)
+}
 
 
 pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
-    valid_path_list("read_allow",&policy.filesystem.read_allow)?;
-    valid_path_list("write_allow", &policy.filesystem.write_allow)?;
-    valid_path_list("exec_allow",&policy.filesystem.exec_allow)?;
-    valid_path_list("deny",&policy.filesystem.deny)?;
     
-    let sandbox_config = SandboxConfig {
-        read_allow: policy.filesystem.read_allow.clone(),
-        write_allow: policy.filesystem.write_allow.clone(),
-        exec_allow: policy.filesystem.exec_allow.clone(),
-    };
 
-    Ok(sandbox_config)
+
+    let read_allow = canonicalize_path_list("read_allow", &policy.filesystem.read_allow)? ;
+    let write_allow = canonicalize_path_list("write_allow", &policy.filesystem.write_allow)?;
+    let exec_allow = canonicalize_path_list("execute_allow", &policy.filesystem.exec_allow)?;
+
+    
+    Ok(SandboxConfig { read_allow, write_allow, exec_allow })
 }
 
-fn valid_path_list(label: &str, paths: &[String]) -> Result<(),String>{
-    for path in paths {
-        std::fs::canonicalize(path).map_err(|err| format!("Invalid {} path '{}' : {}",label,path,err))?;
-    }
 
-    return Ok(());
-
-
-}
 
 pub fn apply_filesystem_sandbox(config: &SandboxConfig) -> Result<(), String> {
     let abi = ABI::V1;
