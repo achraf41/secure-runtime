@@ -2,7 +2,11 @@ use std::io;
 use std::os::unix::process::CommandExt;
 use std::process::{Command, ExitStatus};
 
-use crate::sandbox::{apply_filesystem_sandbox, SandboxConfig};
+use crate::sandbox::{
+    apply_filesystem_sandbox,
+    apply_resource_limits,
+    SandboxConfig,
+};
 
 pub fn run_app_sandboxed(
     app_path: &str,
@@ -12,8 +16,16 @@ pub fn run_app_sandboxed(
 
     unsafe {
         command.pre_exec(move || {
+            
+            apply_resource_limits(&config.resources)
+                .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
+            
             apply_filesystem_sandbox(&config)
-                .map_err(|err| io::Error::new(io::ErrorKind::Other, err))
+                .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
+            
+            
+            Ok(())
+        
         });
     }
 

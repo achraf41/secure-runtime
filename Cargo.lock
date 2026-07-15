@@ -267,6 +267,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rlimit"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f35ee2729c56bb610f6dba436bf78135f728b7373bdffae2ec815b2d3eb98cc3"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "rustversion"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -278,6 +287,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "landlock",
+ "rlimit",
  "serde",
  "serde_json",
  "sha2",

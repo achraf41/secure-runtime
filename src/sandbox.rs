@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use rlimit::{setrlimit, Resource};
 
 use crate::policy::Policy;
 
@@ -12,13 +13,27 @@ use landlock::{
     RulesetCreatedAttr,
     RulesetStatus,
 };
+
+
+#[derive(Debug, Clone)]
+pub struct ResourceConfig {
+    pub cpu_seconds: Option<u64>,
+    pub memory_bytes: Option<u64>,
+    pub max_file_size_bytes: Option<u64>,
+    pub max_processes: Option<u64>,
+}
+
+
 #[derive(Debug, Clone)]
 
 pub struct SandboxConfig {
     pub read_allow: Vec<PathBuf>,
     pub write_allow: Vec<PathBuf>,
     pub exec_allow: Vec<PathBuf>,
+    pub resources: ResourceConfig,
 }
+
+
 
 fn canonicalize_path_list(label: &str, paths: &[String]) -> Result<Vec<PathBuf>, String> {
     let mut canonical_paths = Vec::new();
@@ -40,10 +55,52 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
 
     let read_allow = canonicalize_path_list("read_allow", &policy.filesystem.read_allow)? ;
     let write_allow = canonicalize_path_list("write_allow", &policy.filesystem.write_allow)?;
-    let exec_allow = canonicalize_path_list("execute_allow", &policy.filesystem.exec_allow)?;
+    let exec_allow = canonicalize_path_list("exec_allow", &policy.filesystem.exec_allow)?;
 
     
-    Ok(SandboxConfig { read_allow, write_allow, exec_allow })
+    let resources = match &policy.resources {
+        Some(resource_policy) => ResourceConfig {
+            cpu_seconds: resource_policy.cpu_seconds,
+            memory_bytes: match resource_policy.memory_mb {
+                Some( mem_by ) => {
+                    match mem_by.checked_mul(1024) {
+                        Some(mem) => {
+                            match mem.checked_mul(1024) {
+                                Some(mem_f) => Some(mem_f),
+                                None => return Err("Overflow in memory byte".to_string())
+                            }
+                        }
+                        None => return Err("Overflow in memory byte".to_string())
+                    }
+                },
+                None => None
+            },
+            max_file_size_bytes: match resource_policy.max_file_size_mb {
+                Some(max_file) => {
+                    match max_file.checked_mul(1024) {
+                        Some(max_file1) => {
+                            match max_file1.checked_mul(1024) {
+                                Some(max_filef) => Some(max_filef),
+                                None => return Err("Overflow in max file size".to_string())
+                            }
+                        },
+                        None => return Err("Overflow in max file size".to_string())
+                    }
+                },
+                None => None
+            },
+            max_processes: resource_policy.max_processes,
+        },
+        None => ResourceConfig {
+            cpu_seconds: None,
+            memory_bytes: None,
+            max_file_size_bytes: None,
+            max_processes: None,
+        },
+    };
+
+
+    Ok(SandboxConfig { read_allow, write_allow, exec_allow,resources })
 }
 
 
@@ -88,4 +145,30 @@ pub fn apply_filesystem_sandbox(config: &SandboxConfig) -> Result<(), String> {
             Err("Landlock ruleset was not enforced".to_string())
         }
     }
+}
+
+pub fn apply_resource_limits(config: &ResourceConfig) -> Result<(),String> {
+    
+    if let Some( secondds) = config.cpu_seconds && secondds > 0 {
+        setrlimit(Resource::CPU, secondds, secondds)
+            .map_err(|err| format!("Failed to set CPU : {}",err))?;
+    }
+
+    if let Some(bytes) = config.memory_bytes && bytes > 0{
+        setrlimit(Resource::AS, bytes, bytes)
+            .map_err(|err| format!("Faild to set memory limit : {}",err))?;
+    }
+
+    if let Some(bytes) = config.max_file_size_bytes {
+        setrlimit(Resource::FSIZE, bytes, bytes)
+            .map_err(|err| format!("Failed to set file size limit : {}",err))?;
+    }
+
+    if let Some(processes) = config.max_processes {
+        setrlimit(Resource::NPROC, processes, processes)
+            .map_err(|err| format!("Failed to set process limit : {}",err))?;
+    }
+
+
+    Ok(())
 }

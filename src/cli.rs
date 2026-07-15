@@ -1,7 +1,6 @@
 use std::path::Path;
 
 
-
 pub fn check_cli(args: &[String]) -> Result<(String, String),String> {
     if args.len() != 5 {
         return Err(format!("Usage: secure-run --policy <policy_path>  --app <app_path>"));
