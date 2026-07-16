@@ -115,7 +115,10 @@ log_security_event(
 );
 
 
+// -----------------------  BAD LOG---------------------------------
 // -----------------------------------------------------------------
+
+
     log_security_event(&policy.app_id, "app_spawn_attempt", "allow", "Executing application", 0.0);
     
     match run_app_sandboxed(&app_path, config) {

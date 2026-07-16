@@ -1,6 +1,15 @@
 use serde::{Deserialize, Serialize};
 
 
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NetworkPolicy {
+    pub connect_tcp: Option<Vec<u16>>,
+    pub bind_tcp: Option<Vec<u16>>,
+}
+
+
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ResourcePolicy {
     pub cpu_seconds: Option<u64>,
@@ -27,6 +36,7 @@ pub struct Policy {
     pub default_action: String,
     pub filesystem: FileSystemPolicy,
     pub resources: Option<ResourcePolicy>,
+    pub network: Option<NetworkPolicy>,
 }
 
 
@@ -81,6 +91,20 @@ pub fn load_policy(path: &str) -> Result<Policy, String> {
             }
         }
 
+    }
+
+
+    if let Some(network) = &policy.network {
+        if let Some(con_tcp) = &network.connect_tcp {
+            if con_tcp.contains(&0) {
+                return Err("Invalid port in connect tcp : 0 ".to_string());
+            }
+        }
+        if let Some(bin_tcp) = &network.bind_tcp {
+            if bin_tcp.contains(&0) {
+                return Err("Invalid port in bind tcp : 0".to_string());
+            }
+        }
     }
 
     return Ok(policy);

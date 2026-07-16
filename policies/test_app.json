@@ -1,7 +1,7 @@
 {
   "app_id": "test_app",
   "app_path": "./test_app",
-  "app_hash": "1b78201314d87441ca7fca7b4a376c29a35a334e3d52882e4d10c030ba990add",
+  "app_hash": "997af9e9c4e079572cdcc62a85193b4763af6169cfe1441ba3bf71f914ef1f57",
   "default_action": "deny",
 
   "filesystem": {
@@ -21,5 +21,9 @@
   	"memory_mb": 128,
   	"max_file_size_mb": 20,
   	"max_processes": 1
+  },
+  "network": {
+	"connect_tcp": [80],
+	"bind_tcp": []
   }
 }

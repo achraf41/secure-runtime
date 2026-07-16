@@ -3,7 +3,7 @@ use std::os::unix::process::CommandExt;
 use std::process::{Command, ExitStatus};
 
 use crate::sandbox::{
-    apply_filesystem_sandbox,
+    apply_landlock_sandbox,
     apply_resource_limits,
     SandboxConfig,
 };
@@ -20,7 +20,7 @@ pub fn run_app_sandboxed(
             apply_resource_limits(&config.resources)
                 .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
             
-            apply_filesystem_sandbox(&config)
+            apply_landlock_sandbox(&config)
                 .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
             
             
