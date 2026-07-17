@@ -104,15 +104,34 @@ fn main() {
     memory,
     file_size,
     processes
-);
+    );
 
-log_security_event(
-    &policy.app_id,
-    "resource_limits_configured",
-    "allow",
-    &resource_reason,
-    0.0,
-);
+    log_security_event(
+        &policy.app_id,
+        "resource_limits_configured",
+        "allow",
+        &resource_reason,
+        0.0,
+    );
+
+    if config.network.enabled {
+        
+        let connect_tcp = if config.network.connect_tcp.is_empty() {
+            "None".to_string()
+        } else {
+            format!("{:?}",config.network.connect_tcp)
+        };
+        
+        let bind_tcp = if config.network.bind_tcp.is_empty() {
+            "None".to_string()
+        } else {
+            format!("{:?}",config.network.bind_tcp)
+        };
+
+        let reason = format!("connect tcp : {} ,bind tcp : {}",connect_tcp ,bind_tcp);
+
+        log_security_event(&policy.app_id, "network_policy_configration", "allow",&reason , 0.0);
+    }
 
 
 // -----------------------  BAD LOG---------------------------------

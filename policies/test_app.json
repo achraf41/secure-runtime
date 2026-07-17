@@ -1,7 +1,7 @@
 {
   "app_id": "test_app",
   "app_path": "./test_app",
-  "app_hash": "997af9e9c4e079572cdcc62a85193b4763af6169cfe1441ba3bf71f914ef1f57",
+  "app_hash": "65567750bde0ee0040518452ddf60284c5b1683eb4f35088276bc51cf0d897fe",
   "default_action": "deny",
 
   "filesystem": {
@@ -23,7 +23,7 @@
   	"max_processes": 1
   },
   "network": {
-	"connect_tcp": [80],
-	"bind_tcp": []
+	"connect_tcp": [],
+	"bind_tcp": [8080]
   }
 }
