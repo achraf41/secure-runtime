@@ -4,7 +4,7 @@ use rlimit::{setrlimit, Resource};
 use crate::policy::Policy;
 
 use landlock::{
-    ABI, Access, AccessFs, AccessNet, NetPort, Ruleset, RulesetAttr, RulesetCreated, RulesetCreatedAttr, RulesetStatus, path_beneath_rules,
+    ABI, Access, AccessFs, AccessNet, NetPort, Ruleset, RulesetAttr, RulesetCreatedAttr, RulesetStatus, path_beneath_rules,
 };
 
 

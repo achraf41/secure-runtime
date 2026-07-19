@@ -1,0 +1,33 @@
+{
+  "app_id": "fs_test",
+  "app_path": "./bin/fs_test",
+  "app_hash": "fe9bed97cae636c4022f24d18cd2dbd36efa2dde61f6bf5b7a3ae8d2bc6cdc8b",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "./sandbox/input",
+      "/lib",
+      "/lib64",
+      "/usr/lib",
+      "/etc/ld.so.cache"
+    ],
+    "write_allow": [
+      "./sandbox/output"
+    ],
+    "exec_allow": [
+      "./bin/fs_test"
+    ],
+    "deny": [
+      "/root",
+      "/home/achraf/.ssh"
+    ]
+  },
+
+  "resources": {
+    "cpu_seconds": 5,
+    "memory_mb": 128,
+    "max_file_size_mb": 20,
+    "max_processes": 32
+  }
+}

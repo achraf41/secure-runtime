@@ -1,0 +1,38 @@
+{
+  "app_id": "network_bind_test",
+  "app_path": "./bin/network_bind_test",
+  "app_hash": "65567750bde0ee0040518452ddf60284c5b1683eb4f35088276bc51cf0d897fe",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "./sandbox/input",
+      "/lib",
+      "/lib64",
+      "/usr/lib",
+      "/etc/ld.so.cache"
+    ],
+    "write_allow": [
+      "./sandbox/output"
+    ],
+    "exec_allow": [
+      "./bin/network_bind_test"
+    ],
+    "deny": [
+      "./sandbox/denied",
+      "/root",
+      "/home/achraf/.ssh"
+    ]
+  },
+
+  "resources": {
+    "cpu_seconds": 5,
+    "memory_mb": 128,
+    "max_file_size_mb": 20,
+    "max_processes": 32
+  },
+  "network": {
+    "connect_tcp": [],
+    "bind_tcp": []
+  }
+}

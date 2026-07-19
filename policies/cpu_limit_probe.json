@@ -1,0 +1,34 @@
+{
+  "app_id": "cpu_limit_test",
+  "app_path": "./bin/cpu_limit_test",
+  "app_hash": "c6517ee798b012da456ca4fd05dbc4f61a447db16901207100d83a8490f2bf2f",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "./sandbox/input",
+      "/lib",
+      "/lib64",
+      "/usr/lib",
+      "/etc/ld.so.cache"
+    ],
+    "write_allow": [
+      "./sandbox/output"
+    ],
+    "exec_allow": [
+      "./bin/cpu_limit_test"
+    ],
+    "deny": [
+      "./sandbox/denied",
+      "/root",
+      "/home/achraf/.ssh"
+    ]
+  },
+
+  "resources": {
+    "cpu_seconds": 1,
+    "memory_mb": 128,
+    "max_file_size_mb": 20,
+    "max_processes": 32
+  }
+}

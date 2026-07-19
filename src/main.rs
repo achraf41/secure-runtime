@@ -10,7 +10,6 @@ mod runner;
 mod sandbox;
 
 use cli::check_cli;
-use landlock::Scope::Signal;
 use policy::load_policy;
 use identity::check_identity;
 use logger::log_security_event;
