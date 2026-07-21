@@ -1,6 +1,7 @@
 target/
 logs/*
 !logs/.gitkeep
+src/note.txt
 
 *.log
 .env

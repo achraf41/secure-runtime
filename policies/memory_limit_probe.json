@@ -1,4 +1,5 @@
 {
+  "policy_version": 1,
   "app_id": "memory_limit_test",
   "app_path": "./bin/memory_limit_test",
   "app_hash": "a10d494321911607d8eec257a7910d1668d47c46bd3bc7f27b90b7b8635cbc42",

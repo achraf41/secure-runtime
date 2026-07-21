@@ -8,8 +8,9 @@ mod identity;
 mod logger;
 mod runner;
 mod sandbox;
+mod seccomp;
 
-use cli::check_cli;
+use cli::{check_cli,CliArgs};
 use policy::load_policy;
 use identity::check_identity;
 use logger::log_security_event;
@@ -20,8 +21,8 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     
     
-    let (policy_path, app_path) = match check_cli(&args){
-        Ok(paths) => paths,
+    let cli  = match check_cli(&args){
+        Ok(cli) => cli,
         Err(err) => {
             log_security_event("unknown", "cli_check", "deny", &err, 1.0);
             eprintln!("{}", err);
@@ -31,7 +32,7 @@ fn main() {
     
     log_security_event("unknown", "cli_check", "allow", "CLI arguments validated successfully", 0.0);
 
-    let policy = match load_policy(&policy_path){
+    let policy = match load_policy(&cli.policy_path){
         Ok(policy) => policy,
         Err(err) => {
             log_security_event("unknown", "policy_load", "deny", &err, 1.0);
@@ -42,12 +43,12 @@ fn main() {
     
     log_security_event(&policy.app_id, "policy_load", "allow", "Policy loaded successfully", 0.0);
     
-    match check_identity(&app_path, &policy){
+    match check_identity(&cli.app_path, &policy){
         Ok(()) => {
             log_security_event(&policy.app_id, "identity_check", "allow", "Identity verified", 0.0);
         },
         Err(err) => {
-            eprintln!("Identity check failed for app: {}. Reason: {}", app_path, err);
+            eprintln!("Identity check failed for app: {}. Reason: {}", cli.app_path, err);
             log_security_event(&policy.app_id, "identity_check", "deny", &err, 1.0);
             std::process::exit(1);
         }
@@ -139,7 +140,7 @@ fn main() {
 
     log_security_event(&policy.app_id, "app_spawn_attempt", "allow", "Executing application", 0.0);
     
-    match run_app_sandboxed(&app_path, config) {
+    match run_app_sandboxed(&cli, config) {
         Ok(status) => {
             if status.success() {
                 
@@ -172,12 +173,16 @@ fn main() {
                 }
 
 
-            } else  {
+            } else if let Some(code) = status.code() {
             
-                log_security_event(&policy.app_id, "app_exit", "deny", &format!("App executed with status: {}", status), 1.0);
-                eprintln!("Application exited with status: {} ", status);
+                log_security_event(&policy.app_id, "app_exit", "deny", &format!("App executed with status code : {}", code), 1.0);
+                eprintln!("Application exited with status code : {} ", code);
                 std::process::exit(1);
             
+            } else {
+                log_security_event(&policy.app_id, "app_exite", "deny", "Application terminated for an unkown reason",1.0);
+                eprintln!("Application terminated for a unkown reason");
+                std::process::exit(1);
             }
         },
         Err(err) => {

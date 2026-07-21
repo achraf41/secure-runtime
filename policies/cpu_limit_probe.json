@@ -1,4 +1,5 @@
 {
+  "policy_version": 1,
   "app_id": "cpu_limit_test",
   "app_path": "./bin/cpu_limit_test",
   "app_hash": "c6517ee798b012da456ca4fd05dbc4f61a447db16901207100d83a8490f2bf2f",

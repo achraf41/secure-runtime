@@ -1,4 +1,5 @@
 {
+  "policy_version": 1,
   "app_id": "network_connect_test",
   "app_path": "./bin/network_connect_test",
   "app_hash": "997af9e9c4e079572cdcc62a85193b4763af6169cfe1441ba3bf71f914ef1f57",

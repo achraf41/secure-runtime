@@ -7,6 +7,13 @@ use landlock::{
     ABI, Access, AccessFs, AccessNet, NetPort, Ruleset, RulesetAttr, RulesetCreatedAttr, RulesetStatus, path_beneath_rules,
 };
 
+#[derive(Debug, Clone)]
+pub struct SeccompConfig {
+    pub enable: bool,
+    pub denied_syscalls: Vec<String>,
+}
+
+
 
 #[derive(Debug, Clone)]
 pub struct ResourceConfig {
@@ -33,6 +40,7 @@ pub struct SandboxConfig {
     pub exec_allow: Vec<PathBuf>,
     pub resources: ResourceConfig,
     pub network: NetworkConfig,
+    pub seccomp: SeccompConfig,
 }
 
 
@@ -121,8 +129,22 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
         
     };
 
+    let seccomp = match &policy.seccomp {
+        Some(secomp_policy) => SeccompConfig{
+            enable: true,
+            denied_syscalls: match &secomp_policy.deny {
+                Some(dney_) => dney_.clone(),
+                None => Vec::new()
+            },
+        },
+        None => SeccompConfig { 
+            enable: false, 
+            denied_syscalls: Vec::new(), 
+        }
+    };
 
-    Ok(SandboxConfig { read_allow, write_allow, exec_allow,resources,network })
+
+    Ok(SandboxConfig { read_allow, write_allow, exec_allow,resources,network,seccomp })
 }
 
 
@@ -230,5 +252,7 @@ pub fn apply_resource_limits(config: &ResourceConfig) -> Result<(),String> {
 
     Ok(())
 }
+
+
 
 

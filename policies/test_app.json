@@ -1,7 +1,8 @@
 {
+  "policy_version": 1,
   "app_id": "test_app",
-  "app_path": "./test_app",
-  "app_hash": "65567750bde0ee0040518452ddf60284c5b1683eb4f35088276bc51cf0d897fe",
+  "app_path": "./bin/args_test",
+  "app_hash": "5db8d461aaf106a720880c193858d12559109997c4718f9910d8c2c12046a84d",
   "default_action": "deny",
 
   "filesystem": {
@@ -13,7 +14,7 @@
 	"/etc/ld.so.cache"
     ],
     "write_allow": ["./sandbox/output"],
-    "exec_allow": ["./test_app"],
+    "exec_allow": ["./bin/args_test"],
     "deny": ["/etc", "/root", "/home/achraf/.ssh"]
   },
   "resources": {
@@ -25,5 +26,8 @@
   "network": {
 	"connect_tcp": [],
 	"bind_tcp": [8080]
+  },
+  "seccomp": {
+	"deny" : ["ptrace"]
   }
 }

@@ -1,5 +1,10 @@
 use serde::{Deserialize, Serialize};
+use libseccomp::ScmpSyscall;
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SeccompPolicy{
+    pub deny: Option<Vec<String>>,
+}
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -30,6 +35,7 @@ pub struct FileSystemPolicy {
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Policy {
+    pub policy_version: u32,
     pub app_id: String,
     pub app_path: String,
     pub app_hash: String,
@@ -37,10 +43,13 @@ pub struct Policy {
     pub filesystem: FileSystemPolicy,
     pub resources: Option<ResourcePolicy>,
     pub network: Option<NetworkPolicy>,
+    pub seccomp: Option<SeccompPolicy>,
 }
 
 
 pub fn load_policy(path: &str) -> Result<Policy, String> {
+
+
     
     let policy_content = match std::fs::read_to_string(path) {
         Ok(content) => content,
@@ -56,6 +65,20 @@ pub fn load_policy(path: &str) -> Result<Policy, String> {
         }
     };
     
+   
+    validate_policy(&policy)?;
+    validate_seccomp_names(&policy)?;
+
+    return Ok(policy);
+}
+
+
+fn validate_policy(policy: &Policy) -> Result<(),String> {
+    
+     if policy.policy_version != 1 {
+        return Err(format!("Unsupported policy version: {}. Supported version: 1",policy.policy_version))
+    }
+
     if !policy.default_action.eq("allow") && !policy.default_action.eq("deny") {
         return Err(format!("Invalid default action in policy: {}", policy.default_action));    }
     
@@ -107,5 +130,26 @@ pub fn load_policy(path: &str) -> Result<Policy, String> {
         }
     }
 
-    return Ok(policy);
+
+    Ok(())
+}
+
+fn validate_seccomp_names(policy: &Policy) -> Result<(),String> {
+    
+    if let Some(seccomp) = &policy.seccomp {
+        
+        if let Some(deny_syscall) = &seccomp.deny {
+            
+            for syscall_name in deny_syscall {
+                if syscall_name.trim().is_empty() {
+                    return Err("Seccomp syscall name cannot be empty".to_string());
+                }
+                ScmpSyscall::from_name(syscall_name)
+                    .map_err(|_| format!("Invalid syscall name in Seccomp policy : {}",syscall_name))?;
+            
+            }
+        }
+    }
+
+    Ok(())
 }

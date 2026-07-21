@@ -1,4 +1,5 @@
 {
+  "policy_version": 1,
   "app_id": "process_limit_test",
   "app_path": "./bin/process_limit_test",
   "app_hash": "1b78201314d87441ca7fca7b4a376c29a35a334e3d52882e4d10c030ba990add",

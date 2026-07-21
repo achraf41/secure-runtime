@@ -1,4 +1,5 @@
 {
+  "policy_version": 1,
   "app_id": "file_limit_test",
   "app_path": "./bin/file_limit_test",
   "app_hash": "8eab547b72144f25b97902b459243f1b11a488fc698929a21fe2fd52aa9253f2",

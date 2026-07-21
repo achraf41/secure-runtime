@@ -1,0 +1,28 @@
+{
+  "policy_version": 1,
+  "app_id": "ptrace_test",
+  "app_path": "./target/debug/ptrace_test",
+  "app_hash": "0a2c3d77b0a433c402c7d68fd9e8709e0f9a84d5b1603b7adc37656b7c2cd1d5",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "./target/debug/ptrace_test",
+      "/lib",
+      "/lib64",
+      "/usr/lib"
+    ],
+    "write_allow": [],
+    "deny": [],
+    "exec_allow": [
+      "./target/debug/ptrace_test"
+    ]
+  },
+
+  "resources": null,
+  "network": null,
+
+  "seccomp": {
+    "deny": []
+  }
+}
