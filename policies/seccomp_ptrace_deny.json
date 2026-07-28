@@ -23,6 +23,7 @@
   "network": null,
 
   "seccomp": {
-    "deny": ["ptrace"]
+    "profile": "baseline",
+    "deny": []
   }
 }

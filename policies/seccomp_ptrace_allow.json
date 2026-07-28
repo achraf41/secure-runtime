@@ -23,6 +23,7 @@
   "network": null,
 
   "seccomp": {
+    "profile": "none",
     "deny": []
   }
 }

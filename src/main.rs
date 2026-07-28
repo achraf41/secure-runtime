@@ -9,13 +9,15 @@ mod logger;
 mod runner;
 mod sandbox;
 mod seccomp;
+mod namespaces;
 
-use cli::{check_cli,CliArgs};
+use cli::{check_cli};
 use policy::load_policy;
 use identity::check_identity;
 use logger::log_security_event;
 use runner::run_app_sandboxed;
 use sandbox::prepare_sandbox;
+
 fn main() {
     
     let args: Vec<String> = std::env::args().collect();
@@ -137,7 +139,19 @@ fn main() {
 // -----------------------  BAD LOG---------------------------------
 // -----------------------------------------------------------------
 
+        let seccomp_reason = format!(
+        "Seccomp configured with profile {:?}; {} syscalls denied",
+        config.seccomp.profile,
+        config.seccomp.denied_syscalls.len()
+    );
 
+    log_security_event(
+        &policy.app_id,
+        "seccomp_configured",
+        "allow",
+        &seccomp_reason,
+        0.0,
+    );
     log_security_event(&policy.app_id, "app_spawn_attempt", "allow", "Executing application", 0.0);
     
     match run_app_sandboxed(&cli, config) {

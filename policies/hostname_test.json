@@ -1,0 +1,47 @@
+{
+  "policy_version": 1,
+  "app_id": "namespace_test",
+  "app_path": "./target/debug/namespace_test",
+  "app_hash": "063e2373c660a4dbbffbd8f92ef5e175808c31706525d76ac35f167e2c9b6da1",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "./target/debug/hostname_test",
+      "/lib",
+      "/lib64",
+      "/usr/lib"
+    ],
+    "write_allow": [],
+    "deny": [],
+    "exec_allow": [
+      "./target/debug/namespace_test"
+    ]
+  },
+
+  "resources": {
+    "cpu_seconds": 5,
+    "memory_bytes": 134217728,
+    "max_file_size_bytes": 10485760,
+    "max_processes": 10
+  },
+
+  "network": {
+    "connect_tcp": [],
+    "bind_tcp": []
+  },
+
+  "seccomp": {
+    "profile": "baseline",
+    "deny": []
+  },
+
+  "namespace": {
+    "uts": {
+      "enabled": true,
+      "hostname": "secure-sandbox"
+    },
+    "ipc": true,
+    "network": true
+  }
+}

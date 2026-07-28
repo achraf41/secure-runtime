@@ -8,6 +8,8 @@ use crate::sandbox::{
     apply_resource_limits,
     SandboxConfig,
 };
+use crate::namespaces::{apply_namespaces};
+
 
 pub fn run_app_sandboxed(
     cli: &CliArgs,
@@ -19,7 +21,18 @@ pub fn run_app_sandboxed(
 
     unsafe {
         command.pre_exec(move || {
-            
+
+            apply_namespaces(&config.namespace)
+            .map_err(|errno| {
+                eprintln!(
+                    "Namespace setup failed: {} (errno {})",
+                    errno,
+                    errno as i32
+                );
+
+                std::io::Error::from_raw_os_error(errno as i32)
+            })?;
+
             apply_resource_limits(&config.resources)
                 .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
             

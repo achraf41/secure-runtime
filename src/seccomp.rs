@@ -12,13 +12,13 @@ pub fn apply_seccomp_filter(config: &SeccompConfig) -> Result<(),String> {
         return Ok(());
     }
 
-    let mut filter = ScmpFilterContext::new_filter(ScmpAction::Allow)
+    let mut filter = ScmpFilterContext::new(ScmpAction::Allow)
         .map_err(|err| format!("Failed to create Seccomp filter : {}",err))?;
 
     for syscall_name in &config.denied_syscalls {
         
         let syscall = ScmpSyscall::from_name(syscall_name)
-            .map_err(|err| format!("Unknown syscall in Seccomp policy: {}",syscall_name))?;
+            .map_err(|_err| format!("Unknown syscall in Seccomp policy: {}",syscall_name))?;
 
         filter
             .add_rule(ScmpAction::Errno(libc::EPERM), syscall)

@@ -2,7 +2,40 @@ use serde::{Deserialize, Serialize};
 use libseccomp::ScmpSyscall;
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct UtsPolicy {
+    pub enabled: Option<bool>,
+    pub hostname: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MountPolicy {
+    pub enabled: Option<bool>,
+    pub private_tmp: Option<bool>,
+    pub tmp_size_mb: Option<u64>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NamespacePolicy {
+    pub uts: Option<UtsPolicy>,
+    pub ipc: Option<bool>,
+    pub network: Option<bool>,
+    pub mount: Option<MountPolicy>,
+}
+
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SeccompProfile {
+    None,
+    Baseline,
+    Strict,
+}
+
+
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SeccompPolicy{
+    pub profile: Option<SeccompProfile>,
     pub deny: Option<Vec<String>>,
 }
 
@@ -44,6 +77,7 @@ pub struct Policy {
     pub resources: Option<ResourcePolicy>,
     pub network: Option<NetworkPolicy>,
     pub seccomp: Option<SeccompPolicy>,
+    pub namespace: Option<NamespacePolicy>,
 }
 
 
@@ -68,6 +102,8 @@ pub fn load_policy(path: &str) -> Result<Policy, String> {
    
     validate_policy(&policy)?;
     validate_seccomp_names(&policy)?;
+    validate_hostname(&policy)?;
+    validate_mount_policy(&policy)?;
 
     return Ok(policy);
 }
@@ -147,6 +183,56 @@ fn validate_seccomp_names(policy: &Policy) -> Result<(),String> {
                 ScmpSyscall::from_name(syscall_name)
                     .map_err(|_| format!("Invalid syscall name in Seccomp policy : {}",syscall_name))?;
             
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn validate_hostname(policy: &Policy) -> Result<(),String> {
+
+    if let Some(namespacepolicy) = &policy.namespace {
+        if let Some(utspolicy) = &namespacepolicy.uts {
+            let hostname = utspolicy.hostname.as_ref().ok_or_else(|| 
+                {"UTS namespace require a hostname".to_string()}
+            )?;
+
+            if hostname.trim().is_empty() {
+                return Err("UTS namespace hostname cannot be empty".to_string());
+            }
+
+            if hostname.len() > 64 {
+                return Err("UTS namespace hostname exceed 63 characters".to_string());
+            }
+
+            if hostname.chars().any(char::is_whitespace) {
+                return Err("UTS namespace hostname cannot have space ".to_string());
+            }
+
+        }
+    }
+
+    return Ok(());
+}
+
+fn validate_mount_policy(policy: &Policy) -> Result<(),String> {
+    if let Some(namespace_policy) = &policy.namespace {
+        if let Some(mount_policy) = &namespace_policy.mount {
+            
+            let mount_enable = mount_policy.enabled.unwrap_or(false);
+            let mount_tmp = mount_policy.private_tmp.unwrap_or(false);
+            
+            if !mount_enable && mount_tmp  {
+                return Err("mount private tmp require mount enable ".to_string());
+            }
+            if let Some(size) = mount_policy.tmp_size_mb {
+                if size == 0 {
+                    return Err("tmp size can not be 0 ".to_string());
+                }
+                if size > 1024 {
+                    return Err("tmp size can not exceed 1024 MB".to_string());
+                }
             }
         }
     }
