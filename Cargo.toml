@@ -19,6 +19,7 @@ nix = {
 		"sched", 
 		"hostname", 
 		"user",
-		"mount"
+		"mount",
+		"process"
 	]
 }

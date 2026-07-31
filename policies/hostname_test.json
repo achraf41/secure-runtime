@@ -2,7 +2,7 @@
   "policy_version": 1,
   "app_id": "namespace_test",
   "app_path": "./target/debug/namespace_test",
-  "app_hash": "063e2373c660a4dbbffbd8f92ef5e175808c31706525d76ac35f167e2c9b6da1",
+  "app_hash": "54b9ef37d718d5f41c25f7234233af21b73d66586e6f809ba3da491dbda9ba99",
   "default_action": "deny",
 
   "filesystem": {
@@ -10,9 +10,11 @@
       "./target/debug/hostname_test",
       "/lib",
       "/lib64",
-      "/usr/lib"
+      "/usr/lib",
+      "/proc",
+      "/tmp"
     ],
-    "write_allow": [],
+    "write_allow": ["/tmp"],
     "deny": [],
     "exec_allow": [
       "./target/debug/namespace_test"
@@ -42,6 +44,11 @@
       "hostname": "secure-sandbox"
     },
     "ipc": true,
-    "network": true
+    "network": true,
+    "mount": {
+	"enabled": true,
+	"private_tmp": true,
+	"tmp_size_mb": 32
+	}
   }
 }

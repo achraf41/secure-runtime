@@ -24,6 +24,18 @@ fn write_mapping(path: &str, content: &str) -> Result<(), Errno> {
         .map_err(io_error_to_errno)
 }
 
+pub fn mount_private_porc() -> Result<(),Errno> {
+    mount(
+        Some("proc"),
+        "/proc",
+        Some("proc"),
+        MsFlags::MS_NOSUID | MsFlags::MS_NODEV | MsFlags::MS_NOEXEC ,
+        None::<&str>,
+    )?;
+    
+    Ok(())
+}
+
 
 fn apply_user_namespace() -> Result<(), Errno> {
     
@@ -57,6 +69,8 @@ fn apply_user_namespace() -> Result<(), Errno> {
 }
 
 fn apply_mount_namespace(config: &MountConfig) -> Result<(),Errno> {
+
+
     mount(
         None::<&str>, 
         "/", 
@@ -65,8 +79,9 @@ fn apply_mount_namespace(config: &MountConfig) -> Result<(),Errno> {
         None::<&str>,
     )?;
 
+
     if config.private_tmp {
-        let mount_options = format!("size={}m,mode=1777,nosuid,nodev",config.tmp_size_mb);
+        let mount_options = format!("size={}m,mode=1777",config.tmp_size_mb);
         mount(
             Some("tmpfs"),
             "/tmp",
@@ -108,7 +123,10 @@ pub fn apply_namespaces( config: &NamespaceConfig) -> Result<(), Errno> {
     }
 
     if config.mount.enabled {
+
         apply_mount_namespace(&config.mount)?;
+        
+
     }
     if config.uts.enabled {
         if let Some(hostname) = &config.uts.hostname {
@@ -116,5 +134,13 @@ pub fn apply_namespaces( config: &NamespaceConfig) -> Result<(), Errno> {
         }
     }
 
+
+    Ok(())
+}
+
+pub fn prepare_pid_namespace(enabled: bool) -> Result<(),Errno> {
+    if enabled {
+        unshare(CloneFlags::CLONE_NEWPID)?;
+    }
     Ok(())
 }

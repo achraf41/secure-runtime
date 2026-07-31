@@ -1,4 +1,6 @@
 use std::os::unix::process::ExitStatusExt;
+use nix::sys::wait::WaitStatus;
+use nix::sys::signal::Signal;
 
 mod cli;
 mod policy;
@@ -15,7 +17,7 @@ use cli::{check_cli};
 use policy::load_policy;
 use identity::check_identity;
 use logger::log_security_event;
-use runner::run_app_sandboxed;
+use runner::{run_app_sandboxed,run_app};
 use sandbox::prepare_sandbox;
 
 fn main() {
@@ -154,58 +156,110 @@ fn main() {
     );
     log_security_event(&policy.app_id, "app_spawn_attempt", "allow", "Executing application", 0.0);
     
-    match run_app_sandboxed(&cli, config) {
-        Ok(status) => {
-            if status.success() {
-                
-                log_security_event(&policy.app_id, "app_exit", "allow", &format!("App executed with status: {}", status), 0.0);
-                println!("Application exited with status: {}", status);
-            
-            } else if let Some(signal) = status.signal() {
-                
-                match Some(signal) {
-                    Some(25) => {
-                        log_security_event(&policy.app_id, "resource_limit_hit" , "deny", &format!("Application killed by signal 25 : File size limit exceeded"), 0.7);
-                        eprintln!("Application killed by singal : {} : File size limit exceeded ",signal);
-                        std::process::exit(1);
-                    },
-                    Some(9) => {
-                        log_security_event(&policy.app_id, "resource_limit_hit" , "deny", &format!("Application killed by signal 9 : Application killed by SIGKILL, possibly hard resource limit "), 0.7);
-                        eprintln!("Application killed by singal : {} : Application killed by SIGKILL, possibly hard resource limit",signal);
-                        std::process::exit(1);
-                    },
-                    Some(24) => {
-                        log_security_event(&policy.app_id, "resource_limit_hit" , "deny", &format!("Application killed by signal 24 : CPU was limited "), 0.7);
-                        eprintln!("Application killed by singal : {} : CPU is limited",signal);
-                        std::process::exit(1);
-                    },
-                    _ => { 
-                        log_security_event(&policy.app_id, "app_exit", "deny", &format!("Application killed by signal: {}",signal ), 1.0);
-                        eprintln!("Application killed by singal : {} ",signal);
-                        std::process::exit(1);
-                    }
-                }
+    match run_app(&cli, config) {
+        Ok(WaitStatus::Exited(_, 0)) => {
+            log_security_event(
+                &policy.app_id,
+                "app_exit",
+                "allow",
+                "Application exited successfully",
+                0.0,
+            );
 
+            println!("Application exited successfully");
+        }
 
-            } else if let Some(code) = status.code() {
-            
-                log_security_event(&policy.app_id, "app_exit", "deny", &format!("App executed with status code : {}", code), 1.0);
-                eprintln!("Application exited with status code : {} ", code);
-                std::process::exit(1);
-            
-            } else {
-                log_security_event(&policy.app_id, "app_exite", "deny", "Application terminated for an unkown reason",1.0);
-                eprintln!("Application terminated for a unkown reason");
-                std::process::exit(1);
-            }
-        },
-        Err(err) => {
-            log_security_event(&policy.app_id, "app_exit", "deny", &err, 1.0);
-            eprintln!("Failed to execute app: {}", err);
+        Ok(WaitStatus::Exited(_, code)) => {
+            log_security_event(
+                &policy.app_id,
+                "app_exit",
+                "deny",
+                &format!("Application exited with status code: {code}"),
+                1.0,
+            );
+
+            eprintln!("Application exited with status code: {code}");
             std::process::exit(1);
         }
-    };
 
+        Ok(WaitStatus::Signaled(_, Signal::SIGXFSZ, _)) => {
+            log_security_event(
+                &policy.app_id,
+                "resource_limit_hit",
+                "deny",
+                "File size limit exceeded",
+                0.7,
+            );
+
+            eprintln!("Application killed: file size limit exceeded");
+            std::process::exit(1);
+        }
+
+        Ok(WaitStatus::Signaled(_, Signal::SIGXCPU, _)) => {
+            log_security_event(
+                &policy.app_id,
+                "resource_limit_hit",
+                "deny",
+                "CPU limit exceeded",
+                0.7,
+            );
+
+            eprintln!("Application killed: CPU limit exceeded");
+            std::process::exit(1);
+        }
+
+        Ok(WaitStatus::Signaled(_, Signal::SIGKILL, _)) => {
+            log_security_event(
+                &policy.app_id,
+                "resource_limit_hit",
+                "deny",
+                "Application killed by SIGKILL",
+                0.7,
+            );
+
+            eprintln!("Application killed by SIGKILL");
+            std::process::exit(1);
+        }
+
+        Ok(WaitStatus::Signaled(_, signal, _)) => {
+            log_security_event(
+                &policy.app_id,
+                "app_exit",
+                "deny",
+                &format!("Application killed by signal: {signal:?}"),
+                1.0,
+            );
+
+            eprintln!("Application killed by signal: {signal:?}");
+            std::process::exit(1);
+        }
+
+        Ok(other_status) => {
+            log_security_event(
+                &policy.app_id,
+                "app_exit",
+                "deny",
+                &format!("Unexpected application status: {other_status:?}"),
+                1.0,
+            );
+
+            eprintln!("Unexpected application status: {other_status:?}");
+            std::process::exit(1);
+        }
+
+        Err(error) => {
+            log_security_event(
+                &policy.app_id,
+                "app_exit",
+                "deny",
+                &error,
+                1.0,
+            );
+
+            eprintln!("Failed to execute app: {error}");
+            std::process::exit(1);
+        }
+    }
 
     
 

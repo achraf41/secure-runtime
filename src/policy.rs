@@ -19,6 +19,7 @@ pub struct NamespacePolicy {
     pub uts: Option<UtsPolicy>,
     pub ipc: Option<bool>,
     pub network: Option<bool>,
+    pub pid: Option<bool>,
     pub mount: Option<MountPolicy>,
 }
 

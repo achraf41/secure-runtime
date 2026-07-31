@@ -30,6 +30,7 @@ pub struct NamespaceConfig {
     pub uts: UtsConfig,
     pub ipc: bool,
     pub network: bool,
+    pub pid: bool,
     pub mount: MountConfig,
 }
 
@@ -271,15 +272,19 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
             hostname: None,
         },
     };
+
+    let pid_ = policy.namespace.as_ref().and_then(|namespace| namespace.pid)
+        .unwrap_or(false);
+
     let mount_config = match &policy.namespace {
         Some(namespace_policy) => {
             match &namespace_policy.mount {
                 Some(mount_policy) => MountConfig {
-                    enabled: mount_policy.enabled.unwrap_or(false),
+                    enabled: mount_policy.enabled.unwrap_or(false) || pid_,
                     private_tmp: mount_policy.private_tmp.unwrap_or(false),
                     tmp_size_mb: mount_policy.tmp_size_mb.unwrap_or(32),
                 },
-                None => MountConfig { enabled: false, private_tmp: false, tmp_size_mb: 32 }
+                None => MountConfig { enabled: pid_, private_tmp: false, tmp_size_mb: 32 }
             }
         },
         None => MountConfig { enabled: false, private_tmp: false, tmp_size_mb: 32 }
@@ -289,12 +294,14 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
         .unwrap_or(false);
     let network_ = policy.namespace.as_ref().and_then(|namespace| namespace.network)
         .unwrap_or(false);
+    
 
     let name_spaces = NamespaceConfig {
-        user_namespace_required: uts_config.enabled || ipc_ || network_ || mount_config.enabled,
+        user_namespace_required: uts_config.enabled || ipc_ || network_ || mount_config.enabled || pid_,
         uts: uts_config,
         ipc: ipc_,
         network: network_,
+        pid: pid_,
         mount: mount_config
     };
 
