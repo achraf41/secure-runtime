@@ -1,2 +1,0 @@
-10:40:37.112765 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/sys/devices/system/cpu/online", O_RDONLY|O_CLOEXEC) = 16</sys/devices/system/cpu/online>
-10:43:44.261981 +++ exited with 0 +++
