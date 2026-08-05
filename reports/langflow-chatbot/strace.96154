@@ -1,0 +1,201 @@
+10:40:24.759893 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/dev/null", O_RDONLY|O_CLOEXEC) = 3</dev/null<char 1:3>>
+10:40:24.764543 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/secure-runtime", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:24.767860 getcwd("/home/achraf/project/secure-runtime", 1024) = 36
+10:40:24.767914 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/secure-runtime", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:24.774108 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 6<TCP:[326015]>
+10:40:24.777455 setsockopt(6<TCP:[326015]>, SOL_TCP, TCP_NODELAY, [1], 4) = 0
+10:40:24.780594 setsockopt(6<TCP:[326015]>, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+10:40:24.783720 bind(6<TCP:[326015]>, {sa_family=AF_INET, sin_port=htons(7860), sin_addr=inet_addr("127.0.0.1")}, 16) = 0
+10:40:24.786855 listen(6<TCP:[127.0.0.1:7860]>, 2048) = 0
+10:40:24.790021 getsockname(6<TCP:[127.0.0.1:7860]>, {sa_family=AF_INET, sin_port=htons(7860), sin_addr=inet_addr("127.0.0.1")}, [16]) = 0
+10:40:24.790393 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/tmp/wgunicorn-2scuavvb", O_RDWR|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC, 0600) = 7</tmp/wgunicorn-2scuavvb>
+10:40:24.790546 unlink("/tmp/wgunicorn-2scuavvb") = 0
+10:40:24.790950 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:24.791050 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx/fork.py", {st_mode=S_IFREG|0664, st_size=3460, ...}, 0) = 0
+10:40:24.791193 getcwd("/home/achraf/project/secure-runtime", 1024) = 36
+10:40:24.791278 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791328 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791369 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791409 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/secure-runtime", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791537 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791581 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791624 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791670 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791718 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791759 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791798 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791838 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages", {st_mode=S_IFDIR|0775, st_size=57344, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791880 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.791932 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx/fork.py", {st_mode=S_IFREG|0664, st_size=3460, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:24.792108 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:24.792163 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx/fork.py", {st_mode=S_IFREG|0664, st_size=3460, ...}, 0) = 0
+10:40:24.792260 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx/fork.py", {st_mode=S_IFREG|0664, st_size=3460, ...}, 0) = 0
+10:40:24.792317 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx/__pycache__/fork.cpython-313.pyc", O_RDONLY|O_CLOEXEC) = 8</home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/lfx/__pycache__/fork.cpython-313.pyc>
+10:40:24.793428 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/proc/96154/stat", O_RDONLY|O_CLOEXEC) = 8</proc/96154/stat>
+10:40:24.793690 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/proc/96154/fd", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 8</proc/96154/fd>
+10:40:24.793835 readlink("/proc/96154/fd/0", "/dev/null", 4096) = 9
+10:40:24.793885 readlink("/proc/96154/fd/1", "/dev/pts/1", 4096) = 10
+10:40:24.793925 readlink("/proc/96154/fd/2", "/dev/pts/1", 4096) = 10
+10:40:24.793963 readlink("/proc/96154/fd/3", "/dev/null", 4096) = 9
+10:40:24.794000 readlink("/proc/96154/fd/4", "pipe:[324354]", 4096) = 13
+10:40:24.794038 readlink("/proc/96154/fd/5", "pipe:[324355]", 4096) = 13
+10:40:24.794074 readlink("/proc/96154/fd/6", "socket:[326015]", 4096) = 15
+10:40:24.794117 readlink("/proc/96154/fd/7", "/tmp/wgunicorn-2scuavvb (deleted)", 4096) = 33
+10:40:24.794163 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/tmp/wgunicorn-2scuavvb (deleted)", 0x7fffa8936ea0, 0) = -1 ENOENT (No such file or directory)
+10:40:24.794225 readlink("/proc/96154/fd/8", 0x7fffa8935ee0, 4096) = -1 ENOENT (No such file or directory)
+10:40:24.794292 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/proc/net/tcp", O_RDONLY|O_CLOEXEC) = 8</proc/96154/net/tcp>
+10:40:24.795305 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/proc/net/tcp6", {st_mode=S_IFREG|0444, st_size=0, ...}, 0) = 0
+10:40:24.795382 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/proc/net/tcp6", O_RDONLY|O_CLOEXEC) = 8</proc/96154/net/tcp6>
+10:40:24.796143 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/proc/96154", {st_mode=S_IFDIR|0555, st_size=0, ...}, 0) = 0
+10:40:25.133908 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f255004e4d0) = 96177
+10:40:25.145274 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/proc/self/stat", O_RDONLY) = 8</proc/96154/stat>
+10:40:25.178384 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.178552 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.cpython-313-x86_64-linux-gnu.so", 0x7fffa89366c0, 0) = -1 ENOENT (No such file or directory)
+10:40:25.178628 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.abi3.so", 0x7fffa89366c0, 0) = -1 ENOENT (No such file or directory)
+10:40:25.178675 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.abi3-x86_64-linux-gnu.so", 0x7fffa89366c0, 0) = -1 ENOENT (No such file or directory)
+10:40:25.178731 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.so", 0x7fffa89366c0, 0) = -1 ENOENT (No such file or directory)
+10:40:25.178774 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.py", {st_mode=S_IFREG|0664, st_size=496, ...}, 0) = 0
+10:40:25.178897 getcwd("/home/achraf/project/secure-runtime", 1024) = 36
+10:40:25.178952 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.178992 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179030 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179069 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/secure-runtime", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179145 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179187 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179223 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179261 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179295 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179331 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179369 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179404 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages", {st_mode=S_IFDIR|0775, st_size=57344, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179442 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179478 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179514 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.py", {st_mode=S_IFREG|0664, st_size=496, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.179674 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.179716 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.cpython-313-x86_64-linux-gnu.so", 0x7fffa89366c0, 0) = -1 ENOENT (No such file or directory)
+10:40:25.179756 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.abi3.so", 0x7fffa89366c0, 0) = -1 ENOENT (No such file or directory)
+10:40:25.179796 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.abi3-x86_64-linux-gnu.so", 0x7fffa89366c0, 0) = -1 ENOENT (No such file or directory)
+10:40:25.179830 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.so", 0x7fffa89366c0, 0) = -1 ENOENT (No such file or directory)
+10:40:25.179864 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.py", {st_mode=S_IFREG|0664, st_size=496, ...}, 0) = 0
+10:40:25.179951 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__init__.py", {st_mode=S_IFREG|0664, st_size=496, ...}, 0) = 0
+10:40:25.180009 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/__init__.cpython-313.pyc", O_RDONLY|O_CLOEXEC) = 8</home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/__init__.cpython-313.pyc>
+10:40:25.180307 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.180356 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.180410 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.180462 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 8</home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl>
+10:40:25.180619 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/server.py", {st_mode=S_IFREG|0664, st_size=12566, ...}, 0) = 0
+10:40:25.180670 getcwd("/home/achraf/project/secure-runtime", 1024) = 36
+10:40:25.180706 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.180746 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.180783 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.180818 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/secure-runtime", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.180874 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.180911 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.180945 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.180979 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.181017 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.181056 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.181091 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.181126 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages", {st_mode=S_IFDIR|0775, st_size=57344, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.181161 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.181198 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.181233 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/server.py", {st_mode=S_IFREG|0664, st_size=12566, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.181327 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.181368 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/server.py", {st_mode=S_IFREG|0664, st_size=12566, ...}, 0) = 0
+10:40:25.181423 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/server.py", {st_mode=S_IFREG|0664, st_size=12566, ...}, 0) = 0
+10:40:25.181465 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/server.cpython-313.pyc", O_RDONLY|O_CLOEXEC) = 8</home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/server.cpython-313.pyc>
+10:40:25.182016 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.182059 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/handlers.py", {st_mode=S_IFREG|0664, st_size=18207, ...}, 0) = 0
+10:40:25.182104 getcwd("/home/achraf/project/secure-runtime", 1024) = 36
+10:40:25.182150 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182201 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182253 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182288 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/secure-runtime", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182344 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182379 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182413 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182453 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182514 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182569 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182622 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182682 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages", {st_mode=S_IFDIR|0775, st_size=57344, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182736 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182788 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182838 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/handlers.py", {st_mode=S_IFREG|0664, st_size=18207, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.182957 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.183014 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/handlers.py", {st_mode=S_IFREG|0664, st_size=18207, ...}, 0) = 0
+10:40:25.183080 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/handlers.py", {st_mode=S_IFREG|0664, st_size=18207, ...}, 0) = 0
+10:40:25.183133 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/handlers.cpython-313.pyc", O_RDONLY|O_CLOEXEC) = 8</home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/handlers.cpython-313.pyc>
+10:40:25.183890 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.183939 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/protocol.py", {st_mode=S_IFREG|0664, st_size=5705, ...}, 0) = 0
+10:40:25.183985 getcwd("/home/achraf/project/secure-runtime", 1024) = 36
+10:40:25.184020 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184055 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184092 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184129 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/secure-runtime", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184181 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184217 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184257 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184292 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184327 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184361 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184394 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184434 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages", {st_mode=S_IFDIR|0775, st_size=57344, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184481 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184528 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184579 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/protocol.py", {st_mode=S_IFREG|0664, st_size=5705, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.184706 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.184751 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/protocol.py", {st_mode=S_IFREG|0664, st_size=5705, ...}, 0) = 0
+10:40:25.184805 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/protocol.py", {st_mode=S_IFREG|0664, st_size=5705, ...}, 0) = 0
+10:40:25.184847 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/protocol.cpython-313.pyc", O_RDONLY|O_CLOEXEC) = 8</home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/protocol.cpython-313.pyc>
+10:40:25.185247 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.185291 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/client.py", {st_mode=S_IFREG|0664, st_size=3478, ...}, 0) = 0
+10:40:25.185336 getcwd("/home/achraf/project/secure-runtime", 1024) = 36
+10:40:25.185370 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185406 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185442 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185477 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/secure-runtime", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185534 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185570 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf", {st_mode=S_IFDIR|0700, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185604 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185639 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185673 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185706 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185739 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185772 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages", {st_mode=S_IFDIR|0775, st_size=57344, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185806 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185841 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185875 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/client.py", {st_mode=S_IFREG|0664, st_size=3478, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:40:25.185970 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+10:40:25.186010 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/client.py", {st_mode=S_IFREG|0664, st_size=3478, ...}, 0) = 0
+10:40:25.186063 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/client.py", {st_mode=S_IFREG|0664, st_size=3478, ...}, 0) = 0
+10:40:25.186102 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/client.cpython-313.pyc", O_RDONLY|O_CLOEXEC) = 8</home/achraf/project/langflow-evaluation/.venv/lib/python3.13/site-packages/gunicorn/ctl/__pycache__/client.cpython-313.pyc>
+10:40:25.186517 clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0x7f24d5770990, parent_tid=0x7f24d5770990, exit_signal=0, stack=0x7f24d4f70000, stack_size=0x7fff40, tls=0x7f24d57706c0} => {parent_tid=[96179]}, 88) = 96179
+10:43:42.862204 --- SIGINT {si_signo=SIGINT, si_code=SI_KERNEL} ---
+10:43:42.862483 getsockname(6<TCP:[127.0.0.1:7860]>, {sa_family=AF_INET, sin_port=htons(7860), sin_addr=inet_addr("127.0.0.1")}, [16]) = 0
+10:43:42.862677 --- SIGTERM {si_signo=SIGTERM, si_code=SI_USER, si_pid=95518, si_uid=1000} ---
+10:43:42.862928 kill(96177, SIGQUIT)    = 0
+10:43:42.863036 wait4(-1, 0x7fffa8936f3c, WNOHANG, NULL) = 0
+10:43:42.963210 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.063380 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.163564 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.263756 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.363875 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.463999 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.564693 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.665085 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.765443 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.865799 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:43.966495 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:44.067104 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:44.167597 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:44.267940 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = 0
+10:43:44.326662 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=96177, si_uid=1000, si_status=0, si_utime=1939 /* 19.39 s */, si_stime=753 /* 7.53 s */} ---
+10:43:44.368216 wait4(-1, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], WNOHANG, NULL) = 96177
+10:43:44.368575 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = -1 ECHILD (No child processes)
+10:43:44.468976 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = -1 ECHILD (No child processes)
+10:43:44.469399 sendto(10<UNIX-STREAM:[322267->322266]>, "\0", 1, 0, NULL, 0) = 1
+10:43:44.472487 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/run/user/1000/gunicorn.ctl", 0x7fffa8936ef0, 0) = -1 ENOENT (No such file or directory)
+10:43:44.472578 wait4(-1, 0x7fffa8936f8c, WNOHANG, NULL) = -1 ECHILD (No child processes)
+10:43:44.472753 exit_group(0)           = ?
+10:43:44.496989 +++ exited with 0 +++

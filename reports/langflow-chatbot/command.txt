@@ -1,0 +1,1 @@
+/home/achraf/project/langflow-evaluation/.venv/bin/langflow run --host 127.0.0.1 --port 7860 

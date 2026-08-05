@@ -1,0 +1,32 @@
+==================================================
+EXECUTED FILES
+==================================================
+/home/achraf/.cargo/bin/file
+/home/achraf/.cargo/bin/git
+/home/achraf/.cargo/bin/uname
+/home/achraf/.local/bin/file
+/home/achraf/.local/bin/git
+/home/achraf/.local/bin/uname
+/home/achraf/project/langflow-evaluation/.venv/bin/file
+/home/achraf/project/langflow-evaluation/.venv/bin/git
+/home/achraf/project/langflow-evaluation/.venv/bin/langflow
+/home/achraf/project/langflow-evaluation/.venv/bin/uname
+/sbin/file
+/sbin/git
+/sbin/uname
+/usr/bin/file
+/usr/bin/git
+/usr/bin/uname
+/usr/local/bin/file
+/usr/local/bin/git
+/usr/local/bin/uname
+/usr/local/sbin/file
+/usr/local/sbin/git
+/usr/local/sbin/uname
+/usr/sbin/file
+/usr/sbin/git
+/usr/sbin/uname
+
+==================================================
+OPENED FILE PATHS
+==================================================

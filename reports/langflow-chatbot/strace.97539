@@ -1,0 +1,25 @@
+10:41:04.590861 execve("/home/achraf/project/langflow-evaluation/.venv/bin/file", ["file", "-b", "/usr/bin/python3.13"], 0x7f2474000be0 /* 67 vars */) = -1 ENOENT (No such file or directory)
+10:41:04.590919 execve("/home/achraf/.cargo/bin/file", ["file", "-b", "/usr/bin/python3.13"], 0x7f2474000be0 /* 67 vars */) = -1 ENOENT (No such file or directory)
+10:41:04.590968 execve("/home/achraf/.local/bin/file", ["file", "-b", "/usr/bin/python3.13"], 0x7f2474000be0 /* 67 vars */) = -1 ENOENT (No such file or directory)
+10:41:04.591009 execve("/usr/local/sbin/file", ["file", "-b", "/usr/bin/python3.13"], 0x7f2474000be0 /* 67 vars */) = -1 ENOENT (No such file or directory)
+10:41:04.591046 execve("/usr/sbin/file", ["file", "-b", "/usr/bin/python3.13"], 0x7f2474000be0 /* 67 vars */) = -1 ENOENT (No such file or directory)
+10:41:04.591097 execve("/sbin/file", ["file", "-b", "/usr/bin/python3.13"], 0x7f2474000be0 /* 67 vars */) = -1 ENOENT (No such file or directory)
+10:41:04.591148 execve("/usr/local/bin/file", ["file", "-b", "/usr/bin/python3.13"], 0x7f2474000be0 /* 67 vars */) = -1 ENOENT (No such file or directory)
+10:41:04.591193 execve("/usr/bin/file", ["file", "-b", "/usr/bin/python3.13"], 0x7f2474000be0 /* 67 vars */) = 0
+10:41:04.591440 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+10:41:04.591474 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+10:41:04.591596 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/lib/x86_64-linux-gnu/libmagic.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libmagic.so.1.0.0>
+10:41:04.591795 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+10:41:04.592053 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/lib/x86_64-linux-gnu/liblzma.so.5", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/liblzma.so.5.8.3>
+10:41:04.592258 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/lib/x86_64-linux-gnu/libbz2.so.1.0", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libbz2.so.1.0.4>
+10:41:04.592498 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libz.so.1.3.2>
+10:41:04.593212 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/.magic.mgc", 0x7ffcd76bdcc0, 0) = -1 ENOENT (No such file or directory)
+10:41:04.593241 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/.magic", 0x7ffcd76bdcc0, 0) = -1 ENOENT (No such file or directory)
+10:41:04.593275 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/magic.mgc", O_RDONLY) = -1 ENOENT (No such file or directory)
+10:41:04.593312 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/magic", {st_mode=S_IFREG|0644, st_size=111, ...}, 0) = 0
+10:41:04.593350 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/magic", O_RDONLY) = 3</etc/magic>
+10:41:04.593471 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/share/misc/magic.mgc", O_RDONLY) = 3</usr/lib/file/magic.mgc>
+10:41:04.593663 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/bin/python3.13", {st_mode=S_IFREG|0755, st_size=6915048, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:41:04.593702 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/bin/python3.13", O_RDONLY|O_NONBLOCK|O_CLOEXEC) = 3</usr/bin/python3.13>
+10:41:04.602698 exit_group(0)           = ?
+10:41:04.602854 +++ exited with 0 +++

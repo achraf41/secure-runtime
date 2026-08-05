@@ -1,0 +1,94 @@
+{
+  "policy_version": 1,
+  "app_id": "langflow_chatbot",
+  "app_path": "/home/achraf/project/langflow-evaluation/.venv/bin/langflow",
+  "app_hash": "e2f134412b1c9323ca1b787524fcb408de7d96b9ca82364caaec5f10d78519ae",
+  "default_action": "deny",
+
+  "filesystem": {
+"read_allow": [
+  "/etc/mime.types",
+  "/home/achraf/project/langflow-evaluation",
+  "/home/achraf/project/langflow-evaluation/.venv",
+  "/home/achraf/project/langflow-evaluation/data",
+  "/home/achraf/.cache",
+  "/usr",
+  "/lib",
+  "/lib64",
+  "/etc/ld.so.cache",
+  "/etc/hosts",
+  "/etc/resolv.conf",
+  "/etc/nsswitch.conf",
+  "/etc/ssl",
+  "/etc/passwd",
+  "/run/user/1000",
+  "/run/systemd/userdb",
+  "/sys/devices/system/cpu",
+  "/sys/fs/cgroup",
+  "/sys/kernel/mm/transparent_hugepage",
+  "/proc",
+  "/dev/null",
+  "/dev/urandom",
+  "/dev/random",
+  "/dev/zero",
+  "/tmp",
+  "/home/achraf/.langflow"
+],
+"write_allow": [
+  "/home/achraf/project/langflow-evaluation/data",
+  "/home/achraf/.cache",
+  "/run/user/1000",
+  "/dev/null",
+  "/tmp",
+  "/home/achraf/.langflow"
+],
+    "exec_allow": [
+      "/home/achraf/project/langflow-evaluation/.venv/bin/langflow",
+      "/home/achraf/project/langflow-evaluation/.venv/bin/python3",
+      "/usr/bin/python3.13",
+      "/usr/bin/git",
+      "/usr/bin/file",
+      "/usr/bin/uname"
+    ],
+
+    "deny": [
+      "/etc/shadow",
+      "/root",
+      "/home/achraf/.ssh",
+      "/home/achraf/.gnupg"
+    ]
+  },
+
+  "resources": {
+    "cpu_seconds": 600,
+    "memory_mb": null,
+    "max_file_size_mb": 1024,
+    "max_processes": null
+  },
+
+  "network": {
+	"connect_tcp": [443, 7860],
+	"bind_tcp": [7860]
+  },
+
+  "seccomp": {
+    "profile": "baseline",
+    "deny": []
+  },
+
+  "namespace": {
+    "uts": {
+      "enabled": true,
+      "hostname": "langflow-sandbox"
+    },
+    "ipc": true,
+    "network": false,
+    "pid": true,
+    "mount": {
+      "enabled": true,
+      "private_tmp": true,
+      "tmp_size_mb": 512
+    }
+  }
+}
+

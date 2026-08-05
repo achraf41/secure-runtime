@@ -1,0 +1,160 @@
+10:41:04.586451 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/bin/python3", {st_mode=S_IFLNK|0777, st_size=6, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:41:04.586660 readlink("/home/achraf/project/langflow-evaluation/.venv/bin/python3", "python", 4096) = 6
+10:41:04.586951 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/project/langflow-evaluation/.venv/bin/python", {st_mode=S_IFLNK|0777, st_size=15, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:41:04.587083 readlink("/home/achraf/project/langflow-evaluation/.venv/bin/python", "/usr/bin/python", 4096) = 15
+10:41:04.587218 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/bin/python", {st_mode=S_IFLNK|0777, st_size=7, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:41:04.587257 readlink("/usr/bin/python", "python3", 4096) = 7
+10:41:04.587790 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/bin/python3", {st_mode=S_IFLNK|0777, st_size=10, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:41:04.588158 readlink("/usr/bin/python3", "python3.13", 4096) = 10
+10:41:04.588251 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/usr/bin/python3.13", {st_mode=S_IFREG|0755, st_size=6915048, ...}, AT_SYMLINK_NOFOLLOW) = 0
+10:41:04.588702 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/dev/null", O_RDWR|O_CLOEXEC) = 19</dev/null<char 1:3>>
+10:41:04.589331 vfork()                 = 97539
+10:41:04.603054 wait4(97539, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 97539
+10:41:04.603169 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:19.265666 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:19.983684 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=558, ...}, 0) = 0
+10:41:19.983745 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/resolv.conf", {st_mode=S_IFREG|0644, st_size=53, ...}, 0) = 0
+10:41:19.983802 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/hosts", O_RDONLY|O_CLOEXEC) = 33</etc/hosts>
+10:41:19.984033 socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 33<UDP:[337999]>
+10:41:19.984158 setsockopt(33<UDP:[337999]>, SOL_IP, IP_RECVERR, [1], 4) = 0
+10:41:19.984251 connect(33<UDP:[337999]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.1.1")}, 16) = 0
+10:41:19.984392 sendmmsg(33<UDP:[192.168.1.112:49614->192.168.1.1:53]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base="\315\367\1\0\0\1\0\0\0\0\0\0\3api\10langflow\5store\0\0\1\0\1", iov_len=36}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=36}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base="~\364\1\0\0\1\0\0\0\0\0\0\3api\10langflow\5store\0\0\34\0\1", iov_len=36}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=36}], 2, MSG_NOSIGNAL) = 2
+10:41:20.148960 recvfrom(33<UDP:[192.168.1.112:49614->192.168.1.1:53]>, "\315\367\201\200\0\1\0\7\0\0\0\0\3api\10langflow\5store\0\0\1\0\1\300\f\0\5\0\1\0\0\1,\0?\16directus-store\rri6ls7718h63a\tus-east-1\2cs\17amazonlightsail\3com\0\3000\0\1\0\1\0\0\0<\0\4d1<'\3000\0\1\0\1\0\0\0<\0\4 \304A\0\3000\0\1\0\1\0\0\0<\0\4,\301\177\210\3000\0\1\0\1\0\0\0<\0\0046\342.\333\3000\0\1\0\1\0\0\0<\0\4,\336\0205\3000\0\1\0\1\0\0\0<\0\4\3\330\376\353", 2048, 0, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.1.1")}, [28 => 16]) = 207
+10:41:20.149144 recvfrom(33<UDP:[192.168.1.112:49614->192.168.1.1:53]>, "~\364\201\200\0\1\0\7\0\0\0\0\3api\10langflow\5store\0\0\34\0\1\300\f\0\5\0\1\0\0\1,\0?\16directus-store\rri6ls7718h63a\tus-east-1\2cs\17amazonlightsail\3com\0\3000\0\34\0\1\0\0\0<\0\20&\0\37\0307\205\373\4B\357\323.\373\313\253N\3000\0\34\0\1\0\0\0<\0\20&\0\37\0307\205\373\3\335\312\2527\247\252R&\3000\0\34\0\1\0\0\0<\0\20&\0\37\0307\205\373\2\343)\376\332K\377\376\251\3000\0\34\0\1\0\0\0<\0\20&\0\37\0307\205\373\0001\256,T\336\360\331\245\3000\0\34\0\1\0\0\0<\0\20&\0\37\0307\205\373\5\314\23\317\270d\365\276\27\3000\0\34\0"..., 65536, 0, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.1.1")}, [28 => 16]) = 279
+10:41:20.149271 socket(AF_NETLINK, SOCK_RAW|SOCK_CLOEXEC, NETLINK_ROUTE) = 33<NETLINK:[338000]>
+10:41:20.149414 bind(33<NETLINK:[338000]>, {sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, 12) = 0
+10:41:20.149535 getsockname(33<NETLINK:[ROUTE:96177]>, {sa_family=AF_NETLINK, nl_pid=96177, nl_groups=00000000}, [12]) = 0
+10:41:20.149636 sendto(33<NETLINK:[ROUTE:96177]>, [{nlmsg_len=20, nlmsg_type=RTM_GETADDR, nlmsg_flags=NLM_F_REQUEST|NLM_F_DUMP, nlmsg_seq=1785753680, nlmsg_pid=0}, {ifa_family=AF_UNSPEC, ...}], 20, 0, {sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, 12) = 20
+10:41:20.149718 recvmsg(33<NETLINK:[ROUTE:96177]>, {msg_name={sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, msg_namelen=12, msg_iov=[{iov_base=[[{nlmsg_len=76, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753680, nlmsg_pid=96177}, {ifa_family=AF_INET, ifa_prefixlen=8, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_HOST, ifa_index=if_nametoindex("lo")}, [[{nla_len=8, nla_type=IFA_ADDRESS}, inet_addr("127.0.0.1")], [{nla_len=8, nla_type=IFA_LOCAL}, inet_addr("127.0.0.1")], [{nla_len=7, nla_type=IFA_LABEL}, "lo"], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=675, tstamp=675}]]], [{nlmsg_len=88, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753680, nlmsg_pid=96177}, {ifa_family=AF_INET, ifa_prefixlen=24, ifa_flags=0, ifa_scope=RT_SCOPE_UNIVERSE, ifa_index=if_nametoindex("wlan0")}, [[{nla_len=8, nla_type=IFA_ADDRESS}, inet_addr("192.168.1.112")], [{nla_len=8, nla_type=IFA_LOCAL}, inet_addr("192.168.1.112")], [{nla_len=8, nla_type=IFA_BROADCAST}, inet_addr("192.168.1.255")], [{nla_len=10, nla_type=IFA_LABEL}, "wlan0"], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_NOPREFIXROUTE], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=253901, ifa_valid=253901, cstamp=2185, tstamp=2185}]]], [{nlmsg_len=96, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753680, nlmsg_pid=96177}, {ifa_family=AF_INET, ifa_prefixlen=16, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_UNIVERSE, ifa_index=if_nametoindex("br-1879be2efa74")}, [[{nla_len=8, nla_type=IFA_ADDRESS}, inet_addr("172.18.0.1")], [{nla_len=8, nla_type=IFA_LOCAL}, inet_addr("172.18.0.1")], [{nla_len=8, nla_type=IFA_BROADCAST}, inet_addr("172.18.255.255")], [{nla_len=20, nla_type=IFA_LABEL}, "br-1879be2efa74"], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=2852, tstamp=2852}]]], [{nlmsg_len=88, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753680, nlmsg_pid=96177}, {ifa_family=AF_INET, ifa_prefixlen=16, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_UNIVERSE, ifa_index=if_nametoindex("docker0")}, [[{nla_len=8, nla_type=IFA_ADDRESS}, inet_addr("172.17.0.1")], [{nla_len=8, nla_type=IFA_LOCAL}, inet_addr("172.17.0.1")], [{nla_len=8, nla_type=IFA_BROADCAST}, inet_addr("172.17.255.255")], [{nla_len=12, nla_type=IFA_LABEL}, "docker0"], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=2860, tstamp=2860}]]], [{nlmsg_len=72, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753680, nlmsg_pid=96177}, {ifa_family=AF_INET6, ifa_prefixlen=128, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_HOST, ifa_index=if_nametoindex("lo")}, [[{nla_len=20, nla_type=IFA_ADDRESS}, inet_pton(AF_INET6, "::1")], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=675, tstamp=675}], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT|IFA_F_NOPREFIXROUTE]]], [{nlmsg_len=72, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753680, nlmsg_pid=96177}, {ifa_family=AF_INET6, ifa_prefixlen=64, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_LINK, ifa_index=if_nametoindex("wlan0")}, [[{nla_len=20, nla_type=IFA_ADDRESS}, inet_pton(AF_INET6, "fe80::7300:6f61:f779:2bf4")], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=1971, tstamp=1971}], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT|IFA_F_NOPREFIXROUTE]]]], iov_len=4096}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 492
+10:41:20.149852 recvmsg(33<NETLINK:[ROUTE:96177]>, {msg_name={sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, msg_namelen=12, msg_iov=[{iov_base=[{nlmsg_len=20, nlmsg_type=NLMSG_DONE, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753680, nlmsg_pid=96177}, 0], iov_len=4096}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 20
+10:41:20.149934 socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC, IPPROTO_IP) = 33<UDP:[338001]>
+10:41:20.150020 connect(33<UDP:[338001]>, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("100.49.60.39")}, 16) = 0
+10:41:20.150107 getsockname(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(32796), sin_addr=inet_addr("192.168.1.112")}, [28 => 16]) = 0
+10:41:20.150184 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.150227 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("32.196.65.0")}, 16) = 0
+10:41:20.150270 getsockname(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(36199), sin_addr=inet_addr("192.168.1.112")}, [28 => 16]) = 0
+10:41:20.150324 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.150382 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("44.193.127.136")}, 16) = 0
+10:41:20.150433 getsockname(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(39188), sin_addr=inet_addr("192.168.1.112")}, [28 => 16]) = 0
+10:41:20.150482 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.150523 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("54.226.46.219")}, 16) = 0
+10:41:20.150586 getsockname(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(59461), sin_addr=inet_addr("192.168.1.112")}, [28 => 16]) = 0
+10:41:20.150651 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.150712 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("44.222.16.53")}, 16) = 0
+10:41:20.150757 getsockname(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(35599), sin_addr=inet_addr("192.168.1.112")}, [28 => 16]) = 0
+10:41:20.150800 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.150839 connect(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("3.216.254.235")}, 16) = 0
+10:41:20.150896 getsockname(33<UDP:[192.168.1.112:32796->100.49.60.39:443]>, {sa_family=AF_INET, sin_port=htons(56484), sin_addr=inet_addr("192.168.1.112")}, [28 => 16]) = 0
+10:41:20.150972 socket(AF_INET6, SOCK_DGRAM|SOCK_CLOEXEC, IPPROTO_IP) = 33<UDPv6:[338002]>
+10:41:20.151063 connect(33<UDPv6:[338002]>, {sa_family=AF_INET6, sin6_port=htons(443), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "2600:1f18:3785:fb04:42ef:d32e:fbcb:ab4e", &sin6_addr), sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+10:41:20.151155 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.151234 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_INET6, sin6_port=htons(443), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "2600:1f18:3785:fb03:ddca:aa37:a7aa:5226", &sin6_addr), sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+10:41:20.151282 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.151332 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_INET6, sin6_port=htons(443), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "2600:1f18:3785:fb02:e329:feda:4bff:fea9", &sin6_addr), sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+10:41:20.151379 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.151418 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_INET6, sin6_port=htons(443), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "2600:1f18:3785:fb00:31ae:2c54:def0:d9a5", &sin6_addr), sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+10:41:20.151462 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.151502 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_INET6, sin6_port=htons(443), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "2600:1f18:3785:fb05:cc13:cfb8:64f5:be17", &sin6_addr), sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+10:41:20.151546 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:41:20.151585 connect(33<UDPv6:[[::]:51306]>, {sa_family=AF_INET6, sin6_port=htons(443), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "2600:1f18:3785:fb01:e2d8:a224:e9e5:944", &sin6_addr), sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+10:41:20.160060 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:20.295622 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:26.060768 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:26.152971 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:26.192301 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:26.405459 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:30.025019 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:30.031651 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:30.058819 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:30.447689 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:41:30.453324 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:29.602460 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:29.735176 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:29.735282 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:29.743075 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:29.745955 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:29.749697 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:29.759231 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/.netrc", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+10:42:29.759331 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/.netrc", 0x7f2483ffe890, 0) = -1 ENOENT (No such file or directory)
+10:42:29.759403 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.216612 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.218621 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.220822 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.223528 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.277219 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.280638 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.282797 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.293066 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.293185 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.328991 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:31.329091 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:55.031907 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:55.121892 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:55.122002 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:55.126220 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:55.129412 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:55.135147 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:55.142084 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/.netrc", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+10:42:55.142175 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/.netrc", 0x7f2483ffe890, 0) = -1 ENOENT (No such file or directory)
+10:42:55.142254 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.918759 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.920675 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.922461 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.924367 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.925632 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.928823 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.929044 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.931064 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.934584 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.936332 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.968989 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:56.969161 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:42:57.020302 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=558, ...}, 0) = 0
+10:42:57.020370 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/resolv.conf", {st_mode=S_IFREG|0644, st_size=53, ...}, 0) = 0
+10:42:57.020444 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/etc/hosts", O_RDONLY|O_CLOEXEC) = 17</etc/hosts>
+10:42:57.020648 socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC|SOCK_NONBLOCK, IPPROTO_IP) = 17<UDP:[350295]>
+10:42:57.020763 setsockopt(17<UDP:[350295]>, SOL_IP, IP_RECVERR, [1], 4) = 0
+10:42:57.020883 connect(17<UDP:[350295]>, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.1.1")}, 16) = 0
+10:42:57.021036 sendmmsg(17<UDP:[192.168.1.112:55822->192.168.1.1:53]>, [{msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base="\2505\1\0\0\1\0\0\0\0\0\0\10langflow\7gateway\5scarf\2sh\0\0\1\0\1", iov_len=43}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=43}, {msg_hdr={msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base="G7\1\0\0\1\0\0\0\0\0\0\10langflow\7gateway\5scarf\2sh\0\0\34\0\1", iov_len=43}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, msg_len=43}], 2, MSG_NOSIGNAL) = 2
+10:42:57.114473 recvfrom(17<UDP:[192.168.1.112:55822->192.168.1.1:53]>, "\2505\201\200\0\1\0\3\0\0\0\0\10langflow\7gateway\5scarf\2sh\0\0\1\0\1\300\f\0\5\0\1\0\0\0\274\0R1a390271ad366843219a41a8971aeb7c9-f3c70b7e91cf940b\3elb\feu-central-1\tamazonaws\3com\0\3007\0\1\0\1\0\0\0#\0\4\3Mg\207\3007\0\1\0\1\0\0\0#\0\4\3C!]", 2048, 0, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.1.1")}, [28 => 16]) = 169
+10:42:57.114666 recvfrom(17<UDP:[192.168.1.112:55822->192.168.1.1:53]>, "G7\201\200\0\1\0\3\0\0\0\0\10langflow\7gateway\5scarf\2sh\0\0\34\0\1\300\f\0\5\0\1\0\0\0\274\0R1a390271ad366843219a41a8971aeb7c9-f3c70b7e91cf940b\3elb\feu-central-1\tamazonaws\3com\0\3007\0\34\0\1\0\0\0#\0\20\0d\377\233\0\0\0\0\0\0\0\0\3Mg\207\3007\0\34\0\1\0\0\0#\0\20\0d\377\233\0\0\0\0\0\0\0\0\3C!]", 65536, 0, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.1.1")}, [28 => 16]) = 193
+10:42:57.114762 socket(AF_NETLINK, SOCK_RAW|SOCK_CLOEXEC, NETLINK_ROUTE) = 17<NETLINK:[308148]>
+10:42:57.114914 bind(17<NETLINK:[308148]>, {sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, 12) = 0
+10:42:57.115014 getsockname(17<NETLINK:[ROUTE:96177]>, {sa_family=AF_NETLINK, nl_pid=96177, nl_groups=00000000}, [12]) = 0
+10:42:57.115096 sendto(17<NETLINK:[ROUTE:96177]>, [{nlmsg_len=20, nlmsg_type=RTM_GETADDR, nlmsg_flags=NLM_F_REQUEST|NLM_F_DUMP, nlmsg_seq=1785753777, nlmsg_pid=0}, {ifa_family=AF_UNSPEC, ...}], 20, 0, {sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, 12) = 20
+10:42:57.115163 recvmsg(17<NETLINK:[ROUTE:96177]>, {msg_name={sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, msg_namelen=12, msg_iov=[{iov_base=[[{nlmsg_len=76, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753777, nlmsg_pid=96177}, {ifa_family=AF_INET, ifa_prefixlen=8, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_HOST, ifa_index=if_nametoindex("lo")}, [[{nla_len=8, nla_type=IFA_ADDRESS}, inet_addr("127.0.0.1")], [{nla_len=8, nla_type=IFA_LOCAL}, inet_addr("127.0.0.1")], [{nla_len=7, nla_type=IFA_LABEL}, "lo"], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=675, tstamp=675}]]], [{nlmsg_len=88, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753777, nlmsg_pid=96177}, {ifa_family=AF_INET, ifa_prefixlen=24, ifa_flags=0, ifa_scope=RT_SCOPE_UNIVERSE, ifa_index=if_nametoindex("wlan0")}, [[{nla_len=8, nla_type=IFA_ADDRESS}, inet_addr("192.168.1.112")], [{nla_len=8, nla_type=IFA_LOCAL}, inet_addr("192.168.1.112")], [{nla_len=8, nla_type=IFA_BROADCAST}, inet_addr("192.168.1.255")], [{nla_len=10, nla_type=IFA_LABEL}, "wlan0"], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_NOPREFIXROUTE], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=253804, ifa_valid=253804, cstamp=2185, tstamp=2185}]]], [{nlmsg_len=96, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753777, nlmsg_pid=96177}, {ifa_family=AF_INET, ifa_prefixlen=16, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_UNIVERSE, ifa_index=if_nametoindex("br-1879be2efa74")}, [[{nla_len=8, nla_type=IFA_ADDRESS}, inet_addr("172.18.0.1")], [{nla_len=8, nla_type=IFA_LOCAL}, inet_addr("172.18.0.1")], [{nla_len=8, nla_type=IFA_BROADCAST}, inet_addr("172.18.255.255")], [{nla_len=20, nla_type=IFA_LABEL}, "br-1879be2efa74"], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=2852, tstamp=2852}]]], [{nlmsg_len=88, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753777, nlmsg_pid=96177}, {ifa_family=AF_INET, ifa_prefixlen=16, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_UNIVERSE, ifa_index=if_nametoindex("docker0")}, [[{nla_len=8, nla_type=IFA_ADDRESS}, inet_addr("172.17.0.1")], [{nla_len=8, nla_type=IFA_LOCAL}, inet_addr("172.17.0.1")], [{nla_len=8, nla_type=IFA_BROADCAST}, inet_addr("172.17.255.255")], [{nla_len=12, nla_type=IFA_LABEL}, "docker0"], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=2860, tstamp=2860}]]], [{nlmsg_len=72, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753777, nlmsg_pid=96177}, {ifa_family=AF_INET6, ifa_prefixlen=128, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_HOST, ifa_index=if_nametoindex("lo")}, [[{nla_len=20, nla_type=IFA_ADDRESS}, inet_pton(AF_INET6, "::1")], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=675, tstamp=675}], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT|IFA_F_NOPREFIXROUTE]]], [{nlmsg_len=72, nlmsg_type=RTM_NEWADDR, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753777, nlmsg_pid=96177}, {ifa_family=AF_INET6, ifa_prefixlen=64, ifa_flags=IFA_F_PERMANENT, ifa_scope=RT_SCOPE_LINK, ifa_index=if_nametoindex("wlan0")}, [[{nla_len=20, nla_type=IFA_ADDRESS}, inet_pton(AF_INET6, "fe80::7300:6f61:f779:2bf4")], [{nla_len=20, nla_type=IFA_CACHEINFO}, {ifa_prefered=4294967295, ifa_valid=4294967295, cstamp=1971, tstamp=1971}], [{nla_len=8, nla_type=IFA_FLAGS}, IFA_F_PERMANENT|IFA_F_NOPREFIXROUTE]]]], iov_len=4096}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 492
+10:42:57.115290 recvmsg(17<NETLINK:[ROUTE:96177]>, {msg_name={sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, msg_namelen=12, msg_iov=[{iov_base=[{nlmsg_len=20, nlmsg_type=NLMSG_DONE, nlmsg_flags=NLM_F_MULTI, nlmsg_seq=1785753777, nlmsg_pid=96177}, 0], iov_len=4096}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 20
+10:42:57.115363 socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC, IPPROTO_IP) = 17<UDP:[308149]>
+10:42:57.115444 connect(17<UDP:[308149]>, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("3.77.103.135")}, 16) = 0
+10:42:57.115516 getsockname(17<UDP:[192.168.1.112:52537->3.77.103.135:443]>, {sa_family=AF_INET, sin_port=htons(52537), sin_addr=inet_addr("192.168.1.112")}, [28 => 16]) = 0
+10:42:57.115583 connect(17<UDP:[192.168.1.112:52537->3.77.103.135:443]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:42:57.115617 connect(17<UDP:[192.168.1.112:52537->3.77.103.135:443]>, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("3.67.33.93")}, 16) = 0
+10:42:57.115652 getsockname(17<UDP:[192.168.1.112:52537->3.77.103.135:443]>, {sa_family=AF_INET, sin_port=htons(57166), sin_addr=inet_addr("192.168.1.112")}, [28 => 16]) = 0
+10:42:57.115704 socket(AF_INET6, SOCK_DGRAM|SOCK_CLOEXEC, IPPROTO_IP) = 17<UDPv6:[308150]>
+10:42:57.115764 connect(17<UDPv6:[308150]>, {sa_family=AF_INET6, sin6_port=htons(443), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "64:ff9b::34d:6787", &sin6_addr), sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+10:42:57.115837 connect(17<UDPv6:[[::]:48888]>, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+10:42:57.115899 connect(17<UDPv6:[[::]:48888]>, {sa_family=AF_INET6, sin6_port=htons(443), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "64:ff9b::343:215d", &sin6_addr), sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+10:42:57.116022 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:29.681675 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:29.681828 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:29.757986 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:29.762855 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:29.769731 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:29.774234 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:29.781052 openat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/.netrc", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+10:43:29.781135 newfstatat(AT_FDCWD</home/achraf/project/secure-runtime>, "/home/achraf/.netrc", 0x7f2483ffe830, 0) = -1 ENOENT (No such file or directory)
+10:43:29.781228 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.424775 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.464310 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.482444 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.545780 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.548058 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.551706 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.555455 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.558134 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.560875 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.575526 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.575674 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:31.610212 sendto(12<UNIX-STREAM:[321289->321288]>, "\0", 1, 0, NULL, 0) = 1
+10:43:44.255121 exit(0)                 = ?
+10:43:44.255176 +++ exited with 0 +++
