@@ -22,6 +22,7 @@ nix = {
 		"mount",
 		"process",
 		"resource",
-		"signal"
+		"signal",
+		"fs"
 	]
 }

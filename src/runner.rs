@@ -1,5 +1,3 @@
-use std::os::unix::process::CommandExt;
-use std::process::{Command, ExitStatus};
 use std::time::{Duration, Instant};
 use std::sync::atomic::{AtomicI32, Ordering};
 use nix::{
@@ -10,6 +8,7 @@ use nix::{
     },
     unistd::{fork, setpgid, ForkResult, Pid, getpid},
 };
+use crate::identity::VerifiedExecutable;
 use crate::logger::log_resource_usage;
 use crate::privileges::{
     apply_no_new_privs,
@@ -33,6 +32,7 @@ use nix::sys::signal::{
 use crate::cgroup::{
     cleanup_cgroup, move_process_to_cgroup, prepare_cgroup, read_cgroup_stats,
 };
+use crate::executor::exec_verified;
 
 static RECEIVED_SIGNAL: AtomicI32 = AtomicI32::new(0);
 
@@ -79,7 +79,7 @@ fn forward_recived_signal(main_child: Pid) -> Result<(),String> {
     Ok(())
 }
 
-fn run_pid1_supervisor(command: &mut Command, config: &SandboxConfig) -> Result<WaitStatus,String> {
+fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], config: &SandboxConfig) -> Result<WaitStatus,String> {
     
      mount_private_proc()
         .map_err(|error| format!("Failed to mount private /proc: {error}"))?;
@@ -209,9 +209,9 @@ fn run_pid1_supervisor(command: &mut Command, config: &SandboxConfig) -> Result<
             apply_seccomp_filter(&config.seccomp)
                 .map_err(|error| format!("Seccomp failed: {error}"))?;
 
-            let error = command.exec();
+            exec_verified(executable,app_args)?;
 
-            Err(format!("Failed to execute application: {error}"))
+            unreachable!();
         }
     }
 }
@@ -238,11 +238,8 @@ fn exit_with_child_status(status: WaitStatus) -> ! {
     }
 }
 
-pub fn run_app(cli: &CliArgs, config: SandboxConfig) -> Result<WaitStatus, String> {
+pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecutable) -> Result<WaitStatus, String> {
     
-    let mut command = Command::new(&cli.app_path);
-    command.args(&cli.app_arg);
-
     let sandbox_cgroup = prepare_cgroup(&config.resources.cgroup)?;
 
     match unsafe { fork() }
@@ -291,7 +288,7 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig) -> Result<WaitStatus, Strin
                 ForkResult::Child => {
                     
                     if config.namespace.pid {
-                        let status = run_pid1_supervisor(&mut command, &config)?;
+                        let status = run_pid1_supervisor(&executable,&cli.app_arg, &config)?;
                         exit_with_child_status(status);
                     }
 
@@ -310,11 +307,8 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig) -> Result<WaitStatus, Strin
                     apply_seccomp_filter(&config.seccomp)
                         .map_err(|error| format!("Seccomp failed: {error}"))?;
 
-                    let error = command.exec();
-
-                    Err(format!(
-                        "Failed to execute application: {error}"
-                    ))
+                    exec_verified(&executable,&cli.app_arg)?;
+                    unreachable!();
                     
                 }
             }

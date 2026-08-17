@@ -1,15 +1,11 @@
 use std::fs::File;
-use std::io::Read;
+use std::io::{Read, Seek, SeekFrom};
 use sha2::{Sha256, Digest};
 
 
-pub fn hash_calc(app_path: &str) -> Result<String, String> {
-    let mut file = match File::open(app_path) {
-        Ok(file) => file,
-        Err(err) => {
-            return Err(format!("Failed to open app file for hashing: {}", err));
-        }
-    };
+pub fn hash_calc(file: &mut File) -> Result<String, String> {
+    file.seek(SeekFrom::Start(0))
+        .map_err(|error| format!("Failed to seek executable : {error}"))?;
 
     
     let mut hasher = Sha256::new();
@@ -28,5 +24,8 @@ pub fn hash_calc(app_path: &str) -> Result<String, String> {
 
     let hash = hasher.finalize();
     let actual_hash = format!("{:x}", hash);
+
+    file.seek(SeekFrom::Start(0))
+        .map_err(|error| format!("Failed to reset executable position : {error}"))?;
     return Ok(actual_hash);
 }

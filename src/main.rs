@@ -1,4 +1,3 @@
-use std::os::unix::process::ExitStatusExt;
 use nix::sys::wait::WaitStatus;
 use nix::sys::signal::Signal;
 
@@ -14,6 +13,7 @@ mod seccomp;
 mod namespaces;
 mod privileges;
 mod cgroup;
+mod executor;
 
 use cli::{check_cli};
 use policy::load_policy;
@@ -49,16 +49,17 @@ fn main() {
     
     log_security_event(&policy.app_id, "policy_load", "allow", "Policy loaded successfully", 0.0);
     
-    match check_identity(&cli.app_path, &policy){
-        Ok(()) => {
+    let executable =match check_identity(&cli.app_path, &policy){
+        Ok(exe) => {
             log_security_event(&policy.app_id, "identity_check", "allow", "Identity verified", 0.0);
+            exe
         },
         Err(err) => {
             eprintln!("Identity check failed for app: {}. Reason: {}", cli.app_path, err);
             log_security_event(&policy.app_id, "identity_check", "deny", &err, 1.0);
             std::process::exit(1);
         }
-    }
+    };
 
 
     let config =match prepare_sandbox(&policy) {
@@ -162,7 +163,7 @@ fn main() {
     );
     log_security_event(&policy.app_id, "app_spawn_attempt", "allow", "Executing application", 0.0);
     
-    match run_app(&cli, config) {
+    match run_app(&cli, config, executable) {
         Ok(WaitStatus::Exited(_, 0)) => {
             log_security_event(
                 &policy.app_id,
