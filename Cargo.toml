@@ -20,6 +20,8 @@ nix = {
 		"hostname", 
 		"user",
 		"mount",
-		"process"
+		"process",
+		"resource",
+		"signal"
 	]
 }

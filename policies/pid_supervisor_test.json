@@ -1,0 +1,72 @@
+{
+  "policy_version": 1,
+
+  "app_id": "pid_supervisor_test",
+
+  "app_path": "/home/achraf/project/secure-runtime/test_apps/process_tree.sh",
+
+  "app_hash": "2f4d3ef4bc622988349d3f708724b02aa41a772dffda55e4b41236807012b48c",
+
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "/home/achraf/project/secure-runtime/test_apps/process_tree.sh",
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc",
+      "/proc",
+      "/dev/null"
+    ],
+
+    "write_allow": [],
+
+    "exec_allow": [
+      "/home/achraf/project/secure-runtime/test_apps/process_tree.sh",
+      "/usr/bin"
+    ],
+
+    "deny": []
+  },
+
+  "resources": {
+    "memory_mb": null,
+    "max_processes": null,
+
+    "rlimit": {
+      "enabled": false,
+      "cpu_seconds": null,
+      "max_file_size_mb": null
+    },
+
+    "cgroup": {
+      "enabled": false,
+      "cpu_percent": null
+    }
+  },
+
+  "network": null,
+
+  "seccomp": {
+    "profile": "baseline",
+    "deny": []
+  },
+
+  "namespace": {
+    "uts": {
+      "enabled": true,
+      "hostname": "pid-test"
+    },
+
+    "ipc": true,
+    "network": false,
+    "pid": true,
+
+    "mount": {
+      "enabled": true,
+      "private_tmp": false,
+      "tmp_size_mb": 32
+    }
+  }
+}

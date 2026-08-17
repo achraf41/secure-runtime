@@ -47,14 +47,26 @@ pub struct NetworkPolicy {
     pub bind_tcp: Option<Vec<u16>>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CgroupPolicy {
+    pub enabled: Option<bool>,
+    pub cpu_percent: Option<u64>,
+}
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RlimitPolicy {
+    pub enabled: Option<bool>,
+    pub cpu_seconds: Option<u64>,
+    pub max_file_size_mb: Option<u64>,
+
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ResourcePolicy {
-    pub cpu_seconds: Option<u64>,
     pub memory_mb: Option<u64>,
-    pub max_file_size_mb: Option<u64>,
     pub max_processes: Option<u64>,
+    pub rlimit: Option<RlimitPolicy>,
+    pub cgroup: Option<CgroupPolicy>,
 }
 
 
@@ -126,12 +138,7 @@ fn validate_policy(policy: &Policy) -> Result<(),String> {
 
 
     if let Some(resources) = &policy.resources {
-        
-        if let Some(cpu_s) = resources.cpu_seconds {
-            if cpu_s == 0 {
-                return Err("Invalid cpue seconds limite".to_string())
-            }
-        }
+
         
         if let Some(memory_mb_v) = resources.memory_mb {
             if memory_mb_v == 0 {
@@ -139,15 +146,52 @@ fn validate_policy(policy: &Policy) -> Result<(),String> {
             }
         }
 
-        if let Some(max_filesz) = resources.max_file_size_mb {
-            if max_filesz == 0 {
-                return Err("Invalide max file size limit".to_string())
-            }
-        }
         
         if let Some(max_proce) = resources.max_processes {
             if max_proce == 0 {
                 return Err("Invalid max process size limit".to_string())
+            }
+        }
+
+        if let Some(rlimit) = &resources.rlimit {
+            
+            if let Some(max_filesz) = rlimit.max_file_size_mb {
+                if max_filesz == 0 {
+                    return Err("Invalide max file size limit".to_string())
+                }
+            }
+        
+            if let Some(cpu_s) = rlimit.cpu_seconds {
+                if cpu_s == 0 {
+                    return Err("Invalid cpue seconds limite".to_string())
+                }
+            }
+            
+            let enabled = rlimit.enabled.unwrap_or(false);
+            if enabled 
+                && rlimit.cpu_seconds.is_none()
+                && rlimit.max_file_size_mb.is_none()
+                && resources.memory_mb.is_none()
+                && resources.max_processes.is_none() {
+                    return Err("Rlimit is enabled but no rlimit resource limit are configuerd".to_string());
+                }
+
+        }
+
+        if let Some(cgroup) = &resources.cgroup {
+            
+            if let Some(cpu_percent) = cgroup.cpu_percent {
+                if cpu_percent == 0 {
+                    return Err("Cgroup cpu_percent cannot be 0".to_string());
+                }
+            }
+            
+            let enabled = cgroup.enabled.unwrap_or(false);
+            if enabled 
+                && resources.memory_mb.is_none() 
+                && resources.max_processes.is_none() 
+                && cgroup.cpu_percent.is_none() {
+                return Err("Cgroup is enabled but no cgroup resource limits are configuerd".to_string());
             }
         }
 

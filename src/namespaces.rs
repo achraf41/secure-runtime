@@ -24,7 +24,7 @@ fn write_mapping(path: &str, content: &str) -> Result<(), Errno> {
         .map_err(io_error_to_errno)
 }
 
-pub fn mount_private_porc() -> Result<(),Errno> {
+pub fn mount_private_proc() -> Result<(),Errno> {
     mount(
         Some("proc"),
         "/proc",

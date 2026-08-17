@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use rlimit::{setrlimit, Resource};
 
-use crate::{namespaces, policy::Policy};
+use crate::{cgroup, namespaces, policy::Policy};
 
 use landlock::{
     ABI, Access, AccessFs, AccessNet, NetPort, Ruleset, RulesetAttr, RulesetCreatedAttr, RulesetStatus, path_beneath_rules,
@@ -41,14 +41,28 @@ pub struct SeccompConfig {
     pub denied_syscalls: Vec<String>,
 }
 
+#[derive(Debug, Clone)]
+pub struct CgroupConfig {
+    pub enabled: bool,
+    pub memory_bytes: Option<u64>,
+    pub max_processes: Option<u64>,
+    pub cpu_percent: Option<u64>,
+}
+
+#[derive(Debug, Clone)]
+pub struct RlimitConfig {
+    pub enabled: bool,
+    pub memory_bytes: Option<u64>,
+    pub max_processes: Option<u64>,
+    pub cpu_seconds: Option<u64>,
+    pub max_file_size_bytes: Option<u64>,
+}
 
 
 #[derive(Debug, Clone)]
 pub struct ResourceConfig {
-    pub cpu_seconds: Option<u64>,
-    pub memory_bytes: Option<u64>,
-    pub max_file_size_bytes: Option<u64>,
-    pub max_processes: Option<u64>,
+    pub rlimit: RlimitConfig,
+    pub cgroup: CgroupConfig,
 }
 
 
@@ -63,6 +77,7 @@ pub struct NetworkConfig {
 #[derive(Debug, Clone)]
 
 pub struct SandboxConfig {
+    pub app_id: String,
     pub read_allow: Vec<PathBuf>,
     pub write_allow: Vec<PathBuf>,
     pub exec_allow: Vec<PathBuf>,
@@ -177,44 +192,85 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
 
     
     let resources = match &policy.resources {
-        Some(resource_policy) => ResourceConfig {
-            cpu_seconds: resource_policy.cpu_seconds,
-            memory_bytes: match resource_policy.memory_mb {
-                Some( mem_by ) => {
-                    match mem_by.checked_mul(1024) {
-                        Some(mem) => {
-                            match mem.checked_mul(1024) {
-                                Some(mem_f) => Some(mem_f),
-                                None => return Err("Overflow in memory byte".to_string())
+        Some(resource_policy) => {
+            let rlimit = match &resource_policy.rlimit {
+                Some(rlimit) => RlimitConfig {
+                    enabled: rlimit.enabled.unwrap_or(false),
+                    memory_bytes: match resource_policy.memory_mb {
+                            Some(mem_by) => {
+                                match mem_by.checked_mul(1024) {
+                                    Some(mem) => {
+                                        match mem.checked_mul(1024) {
+                                            Some(mem_f) => Some(mem_f),
+                                            None => return Err("Overflow in memory byte".to_string())
+                                        }
+                                    }
+                                    None => return Err("Overflow in memory byte".to_string())
+                                }
                             }
-                        }
-                        None => return Err("Overflow in memory byte".to_string())
-                    }
-                },
-                None => None
-            },
-            max_file_size_bytes: match resource_policy.max_file_size_mb {
-                Some(max_file) => {
-                    match max_file.checked_mul(1024) {
-                        Some(max_file1) => {
-                            match max_file1.checked_mul(1024) {
-                                Some(max_filef) => Some(max_filef),
-                                None => return Err("Overflow in max file size".to_string())
-                            }
+                            None => None,
                         },
-                        None => return Err("Overflow in max file size".to_string())
-                    }
+                    max_processes: resource_policy.max_processes,
+                    cpu_seconds: rlimit.cpu_seconds,
+                    max_file_size_bytes: match rlimit.max_file_size_mb {
+                            Some(max_file) => {
+                                match max_file.checked_mul(1024) {
+                                    Some(max_file1) => {
+                                        match max_file1.checked_mul(1024) {
+                                            Some(max_filef) => Some(max_filef),
+                                            None => return Err("Overflow in max file size".to_string())
+                                        }
+                                    },
+                                    None => return Err("Overflow in max file size".to_string())
+                                }
+                            },
+                            None => None
+                        },
+
                 },
-                None => None
-            },
-            max_processes: resource_policy.max_processes,
-        },
-        None => ResourceConfig {
-            cpu_seconds: None,
-            memory_bytes: None,
-            max_file_size_bytes: None,
-            max_processes: None,
-        },
+                None => RlimitConfig { 
+                    enabled: false, 
+                    memory_bytes: None, 
+                    max_processes: None, 
+                    cpu_seconds: None, 
+                    max_file_size_bytes: None 
+                }
+            
+            };
+            
+            let cgroup = match &resource_policy.cgroup {
+                Some(cgroup) => CgroupConfig {
+                    enabled: cgroup.enabled.unwrap_or(false),
+                    memory_bytes: match resource_policy.memory_mb {
+                            Some(mem_by) => {
+                                match mem_by.checked_mul(1024) {
+                                    Some(mem) => {
+                                        match mem.checked_mul(1024) {
+                                            Some(mem_f) => Some(mem_f),
+                                            None => return Err("Overflow in memory byte".to_string())
+                                        }
+                                    }
+                                    None => return Err("Overflow in memory byte".to_string())
+                                }
+                            }
+                            None => None,
+                        },
+                    max_processes: resource_policy.max_processes,
+                    cpu_percent: cgroup.cpu_percent,
+                },
+                None => CgroupConfig { 
+                    enabled: false, 
+                    memory_bytes: None, 
+                    max_processes: None, 
+                    cpu_percent: None 
+                }
+            };
+            ResourceConfig { rlimit, cgroup }
+        }
+        None => ResourceConfig { 
+            rlimit: RlimitConfig { enabled: false, memory_bytes: None, max_processes: None, cpu_seconds: None, max_file_size_bytes: None }, 
+            cgroup: CgroupConfig { enabled: false, memory_bytes: None, max_processes: None, cpu_percent: None } 
+        }
     };
 
 
@@ -305,7 +361,7 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
         mount: mount_config
     };
 
-    Ok(SandboxConfig { read_allow, write_allow, exec_allow, resources, network, seccomp, namespace:name_spaces })
+    Ok(SandboxConfig { app_id: policy.app_id.clone(),read_allow, write_allow, exec_allow, resources, network, seccomp, namespace:name_spaces })
 }
 
 
@@ -388,28 +444,28 @@ pub fn apply_landlock_sandbox(config: &SandboxConfig) -> Result<(), String> {
 
 
 
-pub fn apply_resource_limits(config: &ResourceConfig) -> Result<(),String> {
-    
-    if let Some( secondds) = config.cpu_seconds && secondds > 0 {
-        setrlimit(Resource::CPU, secondds, secondds)
-            .map_err(|err| format!("Failed to set CPU : {}",err))?;
-    }
+pub fn apply_resource_limits(config: &RlimitConfig) -> Result<(),String> {
+    if config.enabled {
+        if let Some( secondds) = config.cpu_seconds && secondds > 0 {
+            setrlimit(Resource::CPU, secondds, secondds)
+                .map_err(|err| format!("Failed to set CPU : {}",err))?;
+        }
 
-    if let Some(bytes) = config.memory_bytes && bytes > 0{
-        setrlimit(Resource::AS, bytes, bytes)
-            .map_err(|err| format!("Faild to set memory limit : {}",err))?;
-    }
+        if let Some(bytes) = config.memory_bytes && bytes > 0{
+            setrlimit(Resource::AS, bytes, bytes)
+                .map_err(|err| format!("Faild to set memory limit : {}",err))?;
+        }
 
-    if let Some(bytes) = config.max_file_size_bytes {
-        setrlimit(Resource::FSIZE, bytes, bytes)
-            .map_err(|err| format!("Failed to set file size limit : {}",err))?;
-    }
+        if let Some(bytes) = config.max_file_size_bytes {
+            setrlimit(Resource::FSIZE, bytes, bytes)
+                .map_err(|err| format!("Failed to set file size limit : {}",err))?;
+        }
 
-    if let Some(processes) = config.max_processes {
-        setrlimit(Resource::NPROC, processes, processes)
-            .map_err(|err| format!("Failed to set process limit : {}",err))?;
+        if let Some(processes) = config.max_processes {
+            setrlimit(Resource::NPROC, processes, processes)
+                .map_err(|err| format!("Failed to set process limit : {}",err))?;
+        }
     }
-
 
     Ok(())
 }

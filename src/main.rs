@@ -12,12 +12,14 @@ mod runner;
 mod sandbox;
 mod seccomp;
 mod namespaces;
+mod privileges;
+mod cgroup;
 
 use cli::{check_cli};
 use policy::load_policy;
 use identity::check_identity;
 use logger::log_security_event;
-use runner::{run_app_sandboxed,run_app};
+use runner::{run_app};
 use sandbox::prepare_sandbox;
 
 fn main() {
@@ -79,11 +81,13 @@ fn main() {
 
     let cpu = config
         .resources
+        .rlimit
         .cpu_seconds
         .map_or("unlimited".to_string(), |value| format!("{}s", value));
 
     let memory = config
         .resources
+        .rlimit
         .memory_bytes
         .map_or("unlimited".to_string(), |value| {
             format!("{} MB", value / 1024 / 1024)
@@ -91,6 +95,7 @@ fn main() {
 
     let file_size = config
         .resources
+        .rlimit
         .max_file_size_bytes
         .map_or("unlimited".to_string(), |value| {
             format!("{} MB", value / 1024 / 1024)
@@ -98,6 +103,7 @@ fn main() {
 
     let processes = config
         .resources
+        .rlimit
         .max_processes
         .map_or("unlimited".to_string(), |value| value.to_string());
 

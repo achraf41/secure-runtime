@@ -1,0 +1,63 @@
+{
+  "policy_version": 1,
+  "app_id": "cgroup_pids_test",
+  "app_path": "/home/achraf/project/secure-runtime/test_apps/cgroup_pids_test.sh",
+  "app_hash": "46dd1ac2cc2cedd7496b4a68c16b1499e87f26bc3b949250621b2e9142492c84",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "/home/achraf/project/secure-runtime/test_apps/cgroup_pids_test.sh",
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc",
+      "/proc",
+      "/dev/null"
+    ],
+    "write_allow": [],
+    "exec_allow": [
+      "/home/achraf/project/secure-runtime/test_apps/cgroup_pids_test.sh",
+      "/usr/bin"
+    ],
+    "deny": []
+  },
+
+  "resources": {
+    "memory_mb": null,
+    "max_processes": 10,
+
+    "rlimit": {
+      "enabled": false,
+      "cpu_seconds": null,
+      "max_file_size_mb": null
+    },
+
+    "cgroup": {
+      "enabled": true,
+      "cpu_percent": null
+    }
+  },
+
+  "network": null,
+
+  "seccomp": {
+    "profile": "baseline",
+    "deny": []
+  },
+
+  "namespace": {
+    "uts": {
+      "enabled": true,
+      "hostname": "cgroup-test"
+    },
+    "ipc": true,
+    "network": false,
+    "pid": true,
+    "mount": {
+      "enabled": true,
+      "private_tmp": false,
+      "tmp_size_mb": 32
+    }
+  }
+}
