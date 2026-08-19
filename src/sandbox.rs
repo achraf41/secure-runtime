@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use rlimit::{setrlimit, Resource};
+use serde_json::Value::Null;
 
 use crate::{cgroup, namespaces, policy::Policy};
 
@@ -61,6 +62,7 @@ pub struct RlimitConfig {
 
 #[derive(Debug, Clone)]
 pub struct ResourceConfig {
+    pub timeout_seconds: Option<u64>,
     pub rlimit: RlimitConfig,
     pub cgroup: CgroupConfig,
 }
@@ -193,6 +195,7 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
     
     let resources = match &policy.resources {
         Some(resource_policy) => {
+            let timeout = resource_policy.timeout_seconds.unwrap_or(0);
             let rlimit = match &resource_policy.rlimit {
                 Some(rlimit) => RlimitConfig {
                     enabled: rlimit.enabled.unwrap_or(false),
@@ -239,6 +242,7 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
             };
             
             let cgroup = match &resource_policy.cgroup {
+                
                 Some(cgroup) => CgroupConfig {
                     enabled: cgroup.enabled.unwrap_or(false),
                     memory_bytes: match resource_policy.memory_mb {
@@ -265,9 +269,10 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
                     cpu_percent: None 
                 }
             };
-            ResourceConfig { rlimit, cgroup }
+            ResourceConfig { timeout_seconds: resource_policy.timeout_seconds,rlimit, cgroup }
         }
         None => ResourceConfig { 
+            timeout_seconds: None,
             rlimit: RlimitConfig { enabled: false, memory_bytes: None, max_processes: None, cpu_seconds: None, max_file_size_bytes: None }, 
             cgroup: CgroupConfig { enabled: false, memory_bytes: None, max_processes: None, cpu_percent: None } 
         }

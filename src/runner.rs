@@ -40,6 +40,16 @@ extern "C" fn handle_signal(signal: libc::c_int) {
     RECEIVED_SIGNAL.store(signal, Ordering::SeqCst);
 }
 
+
+
+#[derive(Debug)]
+enum ApplicationResult {
+    Exited(WaitStatus),
+    TimedOut,
+}
+
+
+
 fn install_signal_handlers() -> Result<(),String> {
     let action = SigAction::new(
         SigHandler::Handler(handle_signal),
@@ -79,7 +89,7 @@ fn forward_recived_signal(main_child: Pid) -> Result<(),String> {
     Ok(())
 }
 
-fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], config: &SandboxConfig) -> Result<WaitStatus,String> {
+fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], config: &SandboxConfig) -> Result<ApplicationResult,String> {
     
      mount_private_proc()
         .map_err(|error| format!("Failed to mount private /proc: {error}"))?;
@@ -94,6 +104,9 @@ fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], con
             let main_child = child;
             let mut main_status: Option<WaitStatus> = None;
             let mut shutdown_deadline: Option<Instant> = None;
+            let execution_deadline = config.resources.timeout_seconds
+                .map(|seconds| Instant::now() + Duration::from_secs(seconds));
+            let mut timeout_triggered = false;
             let mut sigkill_sent = false;
             //let process_group = Pid::from_raw(-main_child.as_raw());
 
@@ -103,7 +116,25 @@ fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], con
             loop {
                 forward_recived_signal(main_child)?;
 
-                let flags = if shutdown_deadline.is_some() {
+                if !timeout_triggered && main_status.is_none() {
+                    if let Some(deadline) = execution_deadline {
+                        if Instant::now() >= deadline {
+                            timeout_triggered = true;
+
+                            println!("Application runtime timeout reached");
+
+                            match killpg(main_child, Signal::SIGTERM) {
+                                Ok(()) | Err(Errno::ESRCH) => {}
+                                Err(error) => {
+                                    return Err(format!("Failed to terminate time-out application : {error}"));
+                                }
+                            }
+                            shutdown_deadline = Some(Instant::now() + Duration::from_secs(3));
+                        }
+                    }
+                }
+
+                let flags = if shutdown_deadline.is_some() || execution_deadline.is_some() {
                     Some(WaitPidFlag::WNOHANG)
                 } else {
                         None
@@ -188,7 +219,15 @@ fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], con
 
                 }
             }
-            main_status.ok_or_else(|| "The main application disappeared without a final status".to_string())
+            
+            if timeout_triggered {
+                return Ok(ApplicationResult::TimedOut);
+            }
+            
+            let status = main_status
+                    .ok_or_else(|| "The main application disappeared without a final status".to_string())?;
+            
+            Ok(ApplicationResult::Exited(status))
 
         }
         ForkResult::Child => {
@@ -263,33 +302,53 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
             {
                 
                 ForkResult::Parent { child } => {
-                    let status = waitpid(child, None)
-                        .map_err(|error| format!("Application waitpid failed: {error}"))?;
+                    let result = if config.namespace.pid {
 
-                    match status {
-                        WaitStatus::Exited(_, code) => {
-                            println!("Application exited with code: {code}");
+                        let status = waitpid(child, None)
+                            .map_err(|error| format!("PID1 waitpid failed: {error}"))?;
+
+                        ApplicationResult::Exited(status)
+                    } else {
+                        wait_with_timeout(child,config.resources.timeout_seconds,)?
+                    };
+
+                    match result {
+                        ApplicationResult::Exited(status) => {
+                            match status {
+                                WaitStatus::Exited(_, code) => {
+                                    println!("Application exited with code: {code}");
+                                }
+
+                                WaitStatus::Signaled(_,signal,_,) => {
+                                    println!("Application terminated by signal: {signal:?}");
+                                }
+
+                                _ => {}
+                            }
+
+                            exit_with_child_status(status);
                         }
 
-                        WaitStatus::Signaled(_, signal, _) => {
-                            println!(
-                                "Application terminated by signal: {signal:?}"
-                            );
-                        }
+                        ApplicationResult::TimedOut => {
+                            eprintln!("Application terminated: runtime timeout exceeded");
 
-                        other => {
-                            println!("Application status: {other:?}");
+                            std::process::exit(124);
                         }
                     }
-
-                    exit_with_child_status(status);
                 }
 
                 ForkResult::Child => {
                     
                     if config.namespace.pid {
-                        let status = run_pid1_supervisor(&executable,&cli.app_arg, &config)?;
-                        exit_with_child_status(status);
+                        match run_pid1_supervisor(&executable, &cli.app_arg, &config)? {
+                            ApplicationResult::Exited(status) => {
+                                exit_with_child_status(status)
+                            }
+                            ApplicationResult::TimedOut => {
+                                eprintln!("Application terminated: runtime timeout exceeded");
+                                std::process::exit(124);
+                            }
+                        }
                     }
 
                     apply_resource_limits(&config.resources.rlimit)
@@ -329,6 +388,135 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
             }
 
             Ok(status)
+        }
+    }
+}
+
+fn wait_with_timeout(
+    main_child: Pid,
+    timeout_seconds: Option<u64>,
+) -> Result<ApplicationResult, String> {
+    let execution_deadline = timeout_seconds
+        .map(|seconds| {
+            Instant::now() + Duration::from_secs(seconds)
+        });
+
+    let mut timeout_triggered = false;
+    let mut shutdown_deadline: Option<Instant> = None;
+    let mut sigkill_sent = false;
+
+    loop {
+        let use_nonblocking =
+            execution_deadline.is_some()
+                || shutdown_deadline.is_some();
+
+        let flags = if use_nonblocking {
+            Some(WaitPidFlag::WNOHANG)
+        } else {
+            None
+        };
+
+        match waitpid(main_child, flags) {
+            Ok(WaitStatus::Exited(pid, code)) => {
+                let status = WaitStatus::Exited(pid, code);
+
+                if timeout_triggered {
+                    return Ok(ApplicationResult::TimedOut);
+                }
+
+                return Ok(ApplicationResult::Exited(status));
+            }
+
+            Ok(WaitStatus::Signaled(
+                pid,
+                signal,
+                core_dumped,
+            )) => {
+                let status = WaitStatus::Signaled(
+                    pid,
+                    signal,
+                    core_dumped,
+                );
+
+                if timeout_triggered {
+                    return Ok(ApplicationResult::TimedOut);
+                }
+
+                return Ok(ApplicationResult::Exited(status));
+            }
+
+            Ok(WaitStatus::StillAlive) => {
+                if !timeout_triggered {
+                    if let Some(deadline) = execution_deadline {
+                        if Instant::now() >= deadline {
+                            timeout_triggered = true;
+
+                            eprintln!(
+                                "Application runtime timeout reached"
+                            );
+
+                            match killpg(
+                                main_child,
+                                Signal::SIGTERM,
+                            ) {
+                                Ok(())
+                                | Err(Errno::ESRCH) => {}
+
+                                Err(error) => {
+                                    return Err(format!(
+                                        "Failed to terminate timed-out application: {error}"
+                                    ));
+                                }
+                            }
+
+                            shutdown_deadline = Some(
+                                Instant::now()
+                                    + Duration::from_secs(3),
+                            );
+                        }
+                    }
+                }
+
+                if timeout_triggered && !sigkill_sent {
+                    if let Some(deadline) = shutdown_deadline {
+                        if Instant::now() >= deadline {
+                            match killpg(
+                                main_child,
+                                Signal::SIGKILL,
+                            ) {
+                                Ok(())
+                                | Err(Errno::ESRCH) => {}
+
+                                Err(error) => {
+                                    return Err(format!(
+                                        "Failed to kill timed-out application: {error}"
+                                    ));
+                                }
+                            }
+
+                            sigkill_sent = true;
+                        }
+                    }
+                }
+
+                std::thread::sleep(
+                    Duration::from_millis(50),
+                );
+            }
+
+            Ok(other) => {
+                println!(
+                    "Application status: {other:?}"
+                );
+            }
+
+            Err(Errno::EINTR) => continue,
+
+            Err(error) => {
+                return Err(format!(
+                    "Application waitpid failed: {error}"
+                ));
+            }
         }
     }
 }

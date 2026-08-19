@@ -63,6 +63,7 @@ pub struct RlimitPolicy {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ResourcePolicy {
+    pub timeout_seconds: Option<u64>,
     pub memory_mb: Option<u64>,
     pub max_processes: Option<u64>,
     pub rlimit: Option<RlimitPolicy>,
@@ -139,7 +140,11 @@ fn validate_policy(policy: &Policy) -> Result<(),String> {
 
     if let Some(resources) = &policy.resources {
 
-        
+        if let Some(timeout) = resources.timeout_seconds {
+            if timeout == 0 {
+                return Err("Invalid timeout second it must be greater then 0".to_string())
+            }
+        }
         if let Some(memory_mb_v) = resources.memory_mb {
             if memory_mb_v == 0 {
                 return Err("Invalid memory limite".to_string())

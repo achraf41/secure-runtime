@@ -1,0 +1,66 @@
+{
+  "policy_version": 1,
+  "app_id": "toctou_test",
+  "app_path": "/home/achraf/project/secure-runtime/test_apps/toctou_good.sh",
+  "app_hash": "82e96b030d8838525614442a15e9734a3b750754f83fec056d51e9dc32012642",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "/home/achraf/project/secure-runtime/test_apps/toctou_good.sh",
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc",
+      "/proc",
+      "/dev/null"
+    ],
+    "write_allow": [
+     "/home/achraf/project/secure-runtime"
+    ],
+    "exec_allow": [
+      "/home/achraf/project/secure-runtime/test_apps",
+      "/usr/bin"
+    ],
+    "deny": []
+  },
+
+  "resources": {
+    "memory_mb": null,
+    "max_processes": null,
+
+    "rlimit": {
+      "enabled": false,
+      "cpu_seconds": null,
+      "max_file_size_mb": null
+    },
+
+    "cgroup": {
+      "enabled": false,
+      "cpu_percent": null
+    }
+  },
+
+  "network": null,
+
+  "seccomp": {
+    "profile": "baseline",
+    "deny": []
+  },
+
+  "namespace": {
+    "uts": {
+      "enabled": true,
+      "hostname": "toctou-test"
+    },
+    "ipc": true,
+    "network": false,
+    "pid": true,
+
+    "mount": {
+      "enabled": true,
+      "private_tmp": false,
+      "tmp_size_mb": 32
+    }
+  }
+}

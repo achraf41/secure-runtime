@@ -62,6 +62,7 @@ fn main() {
     };
 
 
+
     let config =match prepare_sandbox(&policy) {
         Ok(config) => {
             log_security_event(&policy.app_id,"sandbox_prepare","allow",&format!("Filesystem sandbox policy prepared successfully"),0.0);
