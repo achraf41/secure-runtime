@@ -3,7 +3,7 @@ use std::sync::atomic::{AtomicI32, Ordering};
 use nix::{
     errno::Errno,
     sys::{
-        signal::{ Signal,killpg},
+        signal::{kill, Signal,killpg},
         wait::{waitpid, WaitStatus,WaitPidFlag},
     },
     unistd::{fork, setpgid, ForkResult, Pid, getpid},
@@ -37,6 +37,12 @@ use crate::executor::exec_verified;
 use crate::output::{
      OutputState, OutputWriter, create_output_pipes, drain_available_output, redirect_output_to_pipes,
 };
+use crate::control::{
+    ControlReader,
+    create_control_pipe,
+    output_limit_requested,
+    send_output_limit_exceeded,
+};
 
 static RECEIVED_SIGNAL: AtomicI32 = AtomicI32::new(0);
 
@@ -50,6 +56,7 @@ extern "C" fn handle_signal(signal: libc::c_int) {
 enum ApplicationResult {
     Exited(WaitStatus),
     TimedOut,
+    OutputLimitExceeded,
 }
 
 
@@ -292,11 +299,14 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
 
     let (output_reader,output_writer) = create_output_pipes()?;
 
+    let (control_reader, control_writer) = create_control_pipe()?;
+
     match unsafe { fork() }
         .map_err(|error| format!("Launcher fork failed: {error}"))?
     {
         ForkResult::Child => {
             drop(output_reader);
+            drop(control_writer);
             
             if let Some(cgroup_path) = &sandbox_cgroup {
                 move_process_to_cgroup(cgroup_path, getpid())
@@ -317,12 +327,9 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
                     drop(output_writer);
                     let result = if config.namespace.pid {
 
-                        let status = waitpid(child, None)
-                            .map_err(|error| format!("PID1 waitpid failed: {error}"))?;
-
-                        ApplicationResult::Exited(status)
+                        wait_for_pid1(child, &control_reader)?
                     } else {
-                        wait_with_timeout(child,config.resources.timeout_seconds,)?
+                        wait_with_timeout(child,config.resources.timeout_seconds,&control_reader)?
                     };
 
                     match result {
@@ -347,11 +354,16 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
 
                             std::process::exit(124);
                         }
+                        ApplicationResult::OutputLimitExceeded => {
+                            eprintln!("Application terminated: output limit exceeded");
+
+                            std::process::exit(125);
+                        }
                     }
                 }
 
                 ForkResult::Child => {
-                    
+                    drop(control_reader);
                     if config.namespace.pid {
                         match run_pid1_supervisor(&executable, &cli.app_arg, &config, output_writer)? {
                             ApplicationResult::Exited(status) => {
@@ -361,9 +373,13 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
                                 eprintln!("Application terminated: runtime timeout exceeded");
                                 std::process::exit(124);
                             }
+                            ApplicationResult::OutputLimitExceeded => {
+                                eprintln!("Application terminated: output limit exceeded");
+                                std::process::exit(125);
+                            }
                         }
                     }
-
+                    else{
                     setpgid(Pid::from_raw(0),Pid::from_raw(0))
                         .map_err(|error| format!("Failed to create application process group : {error}"))?;
                     
@@ -387,7 +403,7 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
 
                     exec_verified(&executable,&cli.app_arg)?;
                     unreachable!();
-                    
+                    }
                 }
             }
         }
@@ -395,9 +411,11 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
       
         ForkResult::Parent { child } => {
             drop(output_writer);
+            drop(control_reader);
 
             let mut output_state = OutputState::new();
             let mut launcher_status: Option<WaitStatus> = None;
+            let mut output_limit_notified = false;
             loop {
                 if launcher_status.is_none() {
                     match waitpid(child,Some(WaitPidFlag::WNOHANG)) {
@@ -411,8 +429,11 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
                     }
                 }
             
-
-                drain_available_output(&output_reader, &mut output_state)?;
+                drain_available_output(&output_reader, &mut output_state, config.resources.max_output_bytes)?;
+                if output_state.limit_exceeded && !output_limit_notified {
+                    send_output_limit_exceeded(&control_writer)?;
+                    output_limit_notified = true;
+                }
 
                 if launcher_status.is_some() && !output_state.stdout_open && !output_state.stderr_open {
                     break
@@ -435,13 +456,114 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
     }
 }
 
-fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>) -> Result<ApplicationResult, String> {
+
+fn wait_for_pid1(
+    pid1: Pid,
+    control_reader: &ControlReader,
+) -> Result<ApplicationResult, String> {
+    let mut output_limit_triggered = false;
+    let mut shutdown_deadline: Option<Instant> = None;
+    let mut sigkill_sent = false;
+
+    loop {
+        if !output_limit_triggered
+            && output_limit_requested(control_reader)?
+        {
+            output_limit_triggered = true;
+
+            eprintln!(
+                "Application output limit exceeded"
+            );
+
+            match kill(
+                pid1,
+                Signal::SIGTERM,
+            ) {
+                Ok(())
+                | Err(Errno::ESRCH) => {}
+
+                Err(error) => {
+                    return Err(format!(
+                        "Failed to notify PID1 about output limit: {error}"
+                    ));
+                }
+            }
+
+            shutdown_deadline = Some(
+                Instant::now()
+                    + Duration::from_secs(3)
+            );
+        }
+
+        match waitpid(
+            pid1,
+            Some(WaitPidFlag::WNOHANG),
+        ) {
+            Ok(WaitStatus::StillAlive) => {
+                if output_limit_triggered
+                    && !sigkill_sent
+                {
+                    if let Some(deadline) =
+                        shutdown_deadline
+                    {
+                        if Instant::now() >= deadline {
+                            match kill(
+                                pid1,
+                                Signal::SIGKILL,
+                            ) {
+                                Ok(())
+                                | Err(Errno::ESRCH) => {}
+
+                                Err(error) => {
+                                    return Err(format!(
+                                        "Failed to kill PID1 after output limit: {error}"
+                                    ));
+                                }
+                            }
+
+                            sigkill_sent = true;
+                        }
+                    }
+                }
+
+                std::thread::sleep(
+                    Duration::from_millis(50)
+                );
+            }
+
+            Ok(status) => {
+                if output_limit_triggered {
+                    return Ok(
+                        ApplicationResult::OutputLimitExceeded
+                    );
+                }
+
+                return Ok(
+                    ApplicationResult::Exited(status)
+                );
+            }
+
+            Err(Errno::EINTR) => {
+                continue;
+            }
+
+            Err(error) => {
+                return Err(format!(
+                    "PID1 waitpid failed: {error}"
+                ));
+            }
+        }
+    }
+}
+fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>,control_reader: &ControlReader) -> Result<ApplicationResult, String> {
     let execution_deadline = timeout_seconds
         .map(|seconds| Instant::now() + Duration::from_secs(seconds));
 
     let mut timeout_triggered = false;
     let mut shutdown_deadline: Option<Instant> = None;
     let mut sigkill_sent = false;
+
+    let mut output_limit_triggered = false;
 
     loop {
         let use_nonblocking =execution_deadline.is_some() || shutdown_deadline.is_some();
@@ -452,10 +574,31 @@ fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>) -> Result<App
             None
         };
 
+        if !output_limit_triggered && !timeout_triggered && output_limit_requested(control_reader)? {
+            output_limit_triggered = true;
+
+            eprintln!("Application output limit exceeded");
+
+            match killpg(main_child,Signal::SIGTERM,) {
+                Ok(())
+                | Err(Errno::ESRCH) => {}
+
+                Err(error) => {
+                    return Err(format!("Failed to terminate application after output limit: {error}"));
+                }
+            }
+
+            shutdown_deadline = Some(
+                Instant::now()+ Duration::from_secs(3)
+            );
+        }
+
         match waitpid(main_child, flags) {
             Ok(WaitStatus::Exited(pid, code)) => {
                 let status = WaitStatus::Exited(pid, code);
-
+                if output_limit_triggered {
+                    return Ok(ApplicationResult::OutputLimitExceeded);
+                }
                 if timeout_triggered {
                     return Ok(ApplicationResult::TimedOut);
                 }
@@ -466,6 +609,10 @@ fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>) -> Result<App
             Ok(WaitStatus::Signaled(pid, signal, core_dumped)) => {
                 let status = WaitStatus::Signaled(pid,signal,core_dumped);
 
+                if output_limit_triggered {
+                    return Ok(ApplicationResult::OutputLimitExceeded);
+                }
+
                 if timeout_triggered {
                     return Ok(ApplicationResult::TimedOut);
                 }
@@ -474,7 +621,7 @@ fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>) -> Result<App
             }
 
             Ok(WaitStatus::StillAlive) => {
-                if !timeout_triggered {
+                if !timeout_triggered && !output_limit_triggered {
                     if let Some(deadline) = execution_deadline {
                         if Instant::now() >= deadline {
                             timeout_triggered = true;
@@ -497,7 +644,7 @@ fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>) -> Result<App
                     }
                 }
 
-                if timeout_triggered && !sigkill_sent {
+                if (timeout_triggered || output_limit_triggered) && !sigkill_sent {
                     if let Some(deadline) = shutdown_deadline {
                         if Instant::now() >= deadline {
                             match killpg(main_child,Signal::SIGKILL) {

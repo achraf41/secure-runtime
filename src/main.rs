@@ -15,6 +15,7 @@ mod privileges;
 mod cgroup;
 mod executor;
 mod output;
+mod control;
 
 use cli::{check_cli};
 use policy::load_policy;

@@ -63,7 +63,7 @@ pub struct RlimitConfig {
 #[derive(Debug, Clone)]
 pub struct ResourceConfig {
     pub timeout_seconds: Option<u64>,
-    pub max_output_kb: Option<u64>,
+    pub max_output_bytes: Option<u64>,
     pub rlimit: RlimitConfig,
     pub cgroup: CgroupConfig,
 }
@@ -277,14 +277,14 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
             };
             ResourceConfig { 
                 timeout_seconds: resource_policy.timeout_seconds,
-                max_output_kb: max_output_bytes,
+                max_output_bytes,
                 rlimit: rlimit, 
                 cgroup: cgroup ,
             }
         }
         None => ResourceConfig { 
             timeout_seconds: None,
-            max_output_kb: None,
+            max_output_bytes: None,
             rlimit: RlimitConfig { enabled: false, memory_bytes: None, max_processes: None, cpu_seconds: None, max_file_size_bytes: None }, 
             cgroup: CgroupConfig { enabled: false, memory_bytes: None, max_processes: None, cpu_percent: None } 
         }

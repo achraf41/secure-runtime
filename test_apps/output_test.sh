@@ -1,11 +1,7 @@
 #!/bin/bash
 
-echo "HELLO FROM STDOUT"
+for i in $(seq 1 1000); do
+    echo "This is output line number $i and some extra data"
+done
 
-echo "HELLO FROM STDERR" >&2
-
-sleep 1
-
-echo "FINAL STDOUT"
-
-echo "FINAL STDERR" >&2
+echo "APPLICATION FINISHED"

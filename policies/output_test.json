@@ -2,7 +2,7 @@
   "policy_version": 1,
   "app_id": "output_test",
   "app_path": "/home/achraf/project/secure-runtime/test_apps/output_test.sh",
-  "app_hash": "ebc18f21241a89b9d7232a8c9583dc095b5bbb8dca960cb2e392f906e042075b",
+  "app_hash": "83bd67fb2cb2d7da3983ecc1bca85e4d04605b288b9811ef6c65b88e239f0534",
   "default_action": "deny",
 
   "filesystem": {
@@ -28,7 +28,7 @@
 
   "resources": {
     "timeout_seconds": 10,
-    "max_output_kb": 64,
+    "max_output_kb": 1,
     "memory_mb": null,
     "max_processes": null,
 

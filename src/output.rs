@@ -17,6 +17,7 @@ pub struct OutputState {
     pub stdout_open: bool,
     pub stderr_open: bool,
     pub total_bytes: u64,
+    pub limit_exceeded: bool,
 }
 
 impl OutputState {
@@ -25,6 +26,7 @@ impl OutputState {
             stdout_open: true, 
             stderr_open: true, 
             total_bytes: 0 ,
+            limit_exceeded: false,
         }
     }
 }
@@ -72,7 +74,7 @@ pub fn redirect_output_to_pipes(writer: &OutputWriter) -> Result<(),String> {
     Ok(())
 }
 
-pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState) -> Result<(), String> {
+pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState, max_output_bytes: Option<u64>) -> Result<(), String> {
     
 
 
@@ -84,7 +86,7 @@ pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState) ->
     poll(&mut poll_fds, PollTimeout::from(50u16))
         .map_err(|error| format!("Output poll failed: {error}"))?;
 
- let stdout_events = poll_fds[0].revents();
+    let stdout_events = poll_fds[0].revents();
     let stderr_events = poll_fds[1].revents();
 
     if state.stdout_open {
@@ -99,8 +101,21 @@ pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState) ->
                 if bytes_read == 0 {
                     state.stdout_open = false;
                 } else {
-                    state.total_bytes += bytes_read as u64;
+                    
+                    state.total_bytes = state
+                        .total_bytes
+                        .checked_add(bytes_read as u64)
+                        .ok_or_else(|| "Application output byte counter overflow".to_string())?;
 
+                    if let Some(limit) = max_output_bytes {
+                    
+                        if !state.limit_exceeded && state.total_bytes > limit {
+                            state.limit_exceeded = true;
+
+                            eprintln!("\nApplication output limit exceeded: {} > {} bytes",state.total_bytes,limit);
+                        }
+                    }
+                    
                     io::stdout()
                         .write_all(&buffer[..bytes_read])
                         .map_err(|error| format!("Failed to forward stdout: {error}"))?;
@@ -125,7 +140,18 @@ pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState) ->
                 if bytes_read == 0 {
                     state.stderr_open = false;
                 } else {
-                    state.total_bytes += bytes_read as u64;
+                    state.total_bytes = state
+                        .total_bytes
+                        .checked_add(bytes_read as u64)
+                        .ok_or_else(|| "Application output byte counter overflow".to_string())?;
+
+                    if let Some(limit) = max_output_bytes {
+                        if !state.limit_exceeded && state.total_bytes > limit {
+                            
+                            state.limit_exceeded = true;
+                            eprintln!("\nApplication output limit exceeded: {} > {} bytes",state.total_bytes,limit);
+                        }
+                    }
 
                     io::stderr()
                         .write_all(&buffer[..bytes_read])
@@ -138,6 +164,8 @@ pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState) ->
             }
         }
     }
+
+    
 
     Ok(())
 }
