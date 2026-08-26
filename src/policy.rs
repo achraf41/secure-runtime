@@ -64,6 +64,7 @@ pub struct RlimitPolicy {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ResourcePolicy {
     pub timeout_seconds: Option<u64>,
+    pub max_output_kb: Option<u64>,
     pub memory_mb: Option<u64>,
     pub max_processes: Option<u64>,
     pub rlimit: Option<RlimitPolicy>,
@@ -139,6 +140,12 @@ fn validate_policy(policy: &Policy) -> Result<(),String> {
 
 
     if let Some(resources) = &policy.resources {
+
+        if let Some(max_output) = resources.max_output_kb {
+            if max_output == 0 {
+                return Err("Invalid max output it should be greater then 0".to_string());
+            }
+        }
 
         if let Some(timeout) = resources.timeout_seconds {
             if timeout == 0 {

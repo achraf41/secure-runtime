@@ -63,6 +63,7 @@ pub struct RlimitConfig {
 #[derive(Debug, Clone)]
 pub struct ResourceConfig {
     pub timeout_seconds: Option<u64>,
+    pub max_output_kb: Option<u64>,
     pub rlimit: RlimitConfig,
     pub cgroup: CgroupConfig,
 }
@@ -195,6 +196,11 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
     
     let resources = match &policy.resources {
         Some(resource_policy) => {
+            let max_output_bytes = resource_policy.max_output_kb
+                .map(|kb| kb.checked_mul(1024)
+                .ok_or_else(|| "max output is too large".to_string()))
+                .transpose()?;
+
             let timeout = resource_policy.timeout_seconds.unwrap_or(0);
             let rlimit = match &resource_policy.rlimit {
                 Some(rlimit) => RlimitConfig {
@@ -269,10 +275,16 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
                     cpu_percent: None 
                 }
             };
-            ResourceConfig { timeout_seconds: resource_policy.timeout_seconds,rlimit, cgroup }
+            ResourceConfig { 
+                timeout_seconds: resource_policy.timeout_seconds,
+                max_output_kb: max_output_bytes,
+                rlimit: rlimit, 
+                cgroup: cgroup ,
+            }
         }
         None => ResourceConfig { 
             timeout_seconds: None,
+            max_output_kb: None,
             rlimit: RlimitConfig { enabled: false, memory_bytes: None, max_processes: None, cpu_seconds: None, max_file_size_bytes: None }, 
             cgroup: CgroupConfig { enabled: false, memory_bytes: None, max_processes: None, cpu_percent: None } 
         }

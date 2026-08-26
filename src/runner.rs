@@ -34,6 +34,10 @@ use crate::cgroup::{
 };
 use crate::executor::exec_verified;
 
+use crate::output::{
+     OutputState, OutputWriter, create_output_pipes, drain_available_output, redirect_output_to_pipes,
+};
+
 static RECEIVED_SIGNAL: AtomicI32 = AtomicI32::new(0);
 
 extern "C" fn handle_signal(signal: libc::c_int) {
@@ -89,7 +93,7 @@ fn forward_recived_signal(main_child: Pid) -> Result<(),String> {
     Ok(())
 }
 
-fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], config: &SandboxConfig) -> Result<ApplicationResult,String> {
+fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], config: &SandboxConfig, output_writer: OutputWriter) -> Result<ApplicationResult,String> {
     
      mount_private_proc()
         .map_err(|error| format!("Failed to mount private /proc: {error}"))?;
@@ -99,6 +103,7 @@ fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], con
         .map_err(|error| format!("Application fork failed : {error}"))?
     {
         ForkResult::Parent { child } => {
+            drop(output_writer);
             install_signal_handlers()?;
 
             let main_child = child;
@@ -233,6 +238,10 @@ fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], con
         ForkResult::Child => {
             setpgid(Pid::from_raw(0), Pid::from_raw(0))
                 .map_err(|error| format!("Failed to create application process group: {error}"))?;
+
+            redirect_output_to_pipes(&output_writer)?;
+            drop(output_writer);
+
             apply_resource_limits(&config.resources.rlimit)
                     .map_err(|error| format!("Resource limits failed: {error}"))?;
 
@@ -249,7 +258,7 @@ fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], con
                 .map_err(|error| format!("Seccomp failed: {error}"))?;
 
             exec_verified(executable,app_args)?;
-
+            
             unreachable!();
         }
     }
@@ -281,10 +290,13 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
     
     let sandbox_cgroup = prepare_cgroup(&config.resources.cgroup)?;
 
+    let (output_reader,output_writer) = create_output_pipes()?;
+
     match unsafe { fork() }
         .map_err(|error| format!("Launcher fork failed: {error}"))?
     {
         ForkResult::Child => {
+            drop(output_reader);
             
             if let Some(cgroup_path) = &sandbox_cgroup {
                 move_process_to_cgroup(cgroup_path, getpid())
@@ -302,6 +314,7 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
             {
                 
                 ForkResult::Parent { child } => {
+                    drop(output_writer);
                     let result = if config.namespace.pid {
 
                         let status = waitpid(child, None)
@@ -340,7 +353,7 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
                 ForkResult::Child => {
                     
                     if config.namespace.pid {
-                        match run_pid1_supervisor(&executable, &cli.app_arg, &config)? {
+                        match run_pid1_supervisor(&executable, &cli.app_arg, &config, output_writer)? {
                             ApplicationResult::Exited(status) => {
                                 exit_with_child_status(status)
                             }
@@ -350,6 +363,12 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
                             }
                         }
                     }
+
+                    setpgid(Pid::from_raw(0),Pid::from_raw(0))
+                        .map_err(|error| format!("Failed to create application process group : {error}"))?;
+                    
+                    redirect_output_to_pipes(&output_writer)?;
+                    drop(output_writer);
 
                     apply_resource_limits(&config.resources.rlimit)
                         .map_err(|error| format!("Resource limits failed: {error}"))?;
@@ -375,10 +394,34 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
 
       
         ForkResult::Parent { child } => {
-            let status = waitpid(child, None)
-                .map_err(|error| {
-                    format!("Launcher waitpid failed: {error}")
-                })?;
+            drop(output_writer);
+
+            let mut output_state = OutputState::new();
+            let mut launcher_status: Option<WaitStatus> = None;
+            loop {
+                if launcher_status.is_none() {
+                    match waitpid(child,Some(WaitPidFlag::WNOHANG)) {
+                        Ok(WaitStatus::StillAlive) => {}
+
+                        Ok(status) => {launcher_status = Some(status);}
+
+                        Err(Errno::EINTR) => {}
+
+                        Err(error) => {return Err(format!("Launch waitpid failed: {error}"));}
+                    }
+                }
+            
+
+                drain_available_output(&output_reader, &mut output_state)?;
+
+                if launcher_status.is_some() && !output_state.stdout_open && !output_state.stderr_open {
+                    break
+                }
+
+            }
+
+            let status = launcher_status
+                .ok_or_else(|| "Mauncher exited without a stuts".to_string())?;
             
             if let Some(cgroup_path) = &sandbox_cgroup {
                 let stats = read_cgroup_stats(cgroup_path)?;
@@ -392,23 +435,16 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
     }
 }
 
-fn wait_with_timeout(
-    main_child: Pid,
-    timeout_seconds: Option<u64>,
-) -> Result<ApplicationResult, String> {
+fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>) -> Result<ApplicationResult, String> {
     let execution_deadline = timeout_seconds
-        .map(|seconds| {
-            Instant::now() + Duration::from_secs(seconds)
-        });
+        .map(|seconds| Instant::now() + Duration::from_secs(seconds));
 
     let mut timeout_triggered = false;
     let mut shutdown_deadline: Option<Instant> = None;
     let mut sigkill_sent = false;
 
     loop {
-        let use_nonblocking =
-            execution_deadline.is_some()
-                || shutdown_deadline.is_some();
+        let use_nonblocking =execution_deadline.is_some() || shutdown_deadline.is_some();
 
         let flags = if use_nonblocking {
             Some(WaitPidFlag::WNOHANG)
@@ -427,16 +463,8 @@ fn wait_with_timeout(
                 return Ok(ApplicationResult::Exited(status));
             }
 
-            Ok(WaitStatus::Signaled(
-                pid,
-                signal,
-                core_dumped,
-            )) => {
-                let status = WaitStatus::Signaled(
-                    pid,
-                    signal,
-                    core_dumped,
-                );
+            Ok(WaitStatus::Signaled(pid, signal, core_dumped)) => {
+                let status = WaitStatus::Signaled(pid,signal,core_dumped);
 
                 if timeout_triggered {
                     return Ok(ApplicationResult::TimedOut);
@@ -451,27 +479,19 @@ fn wait_with_timeout(
                         if Instant::now() >= deadline {
                             timeout_triggered = true;
 
-                            eprintln!(
-                                "Application runtime timeout reached"
-                            );
+                            eprintln!("Application runtime timeout reached");
 
-                            match killpg(
-                                main_child,
-                                Signal::SIGTERM,
-                            ) {
+                            match killpg(main_child,Signal::SIGTERM) {
                                 Ok(())
                                 | Err(Errno::ESRCH) => {}
 
                                 Err(error) => {
-                                    return Err(format!(
-                                        "Failed to terminate timed-out application: {error}"
-                                    ));
+                                    return Err(format!("Failed to terminate timed-out application: {error}"));
                                 }
                             }
 
                             shutdown_deadline = Some(
-                                Instant::now()
-                                    + Duration::from_secs(3),
+                                Instant::now() + Duration::from_secs(3),
                             );
                         }
                     }
@@ -480,17 +500,12 @@ fn wait_with_timeout(
                 if timeout_triggered && !sigkill_sent {
                     if let Some(deadline) = shutdown_deadline {
                         if Instant::now() >= deadline {
-                            match killpg(
-                                main_child,
-                                Signal::SIGKILL,
-                            ) {
+                            match killpg(main_child,Signal::SIGKILL) {
                                 Ok(())
                                 | Err(Errno::ESRCH) => {}
 
                                 Err(error) => {
-                                    return Err(format!(
-                                        "Failed to kill timed-out application: {error}"
-                                    ));
+                                    return Err(format!("Failed to kill timed-out application: {error}"));
                                 }
                             }
 
@@ -499,23 +514,17 @@ fn wait_with_timeout(
                     }
                 }
 
-                std::thread::sleep(
-                    Duration::from_millis(50),
-                );
+                std::thread::sleep(Duration::from_millis(50));
             }
 
             Ok(other) => {
-                println!(
-                    "Application status: {other:?}"
-                );
+                println!("Application status: {other:?}");
             }
 
             Err(Errno::EINTR) => continue,
 
             Err(error) => {
-                return Err(format!(
-                    "Application waitpid failed: {error}"
-                ));
+                return Err(format!("Application waitpid failed: {error}"));
             }
         }
     }

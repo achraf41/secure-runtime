@@ -23,6 +23,7 @@ nix = {
 		"process",
 		"resource",
 		"signal",
-		"fs"
+		"fs",
+		"poll"
 	]
 }

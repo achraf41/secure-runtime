@@ -1,0 +1,69 @@
+{
+  "policy_version": 1,
+  "app_id": "timeout_pid_false",
+  "app_path": "/home/achraf/project/secure-runtime/test_apps/timeout_test.sh",
+  "app_hash": "a404639ae18c3e92930b9b380025d4cbb8be55d6a048dc9c020a57bb81d2f52b",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "/home/achraf/project/secure-runtime/test_apps",
+      "/usr",
+      "/lib",
+      "/lib64",
+      "/etc",
+      "/proc",
+      "/dev/null"
+    ],
+
+    "write_allow": [],
+
+    "exec_allow": [
+      "/home/achraf/project/secure-runtime/test_apps",
+      "/usr/bin"
+    ],
+
+    "deny": []
+  },
+
+  "resources": {
+    "timeout_seconds": 3,
+    "memory_mb": null,
+    "max_processes": null,
+
+    "rlimit": {
+      "enabled": false,
+      "cpu_seconds": null,
+      "max_file_size_mb": null
+    },
+
+    "cgroup": {
+      "enabled": false,
+      "cpu_percent": null
+    }
+  },
+
+  "network": null,
+
+  "seccomp": {
+    "profile": "baseline",
+    "deny": []
+  },
+
+  "namespace": {
+    "uts": {
+      "enabled": true,
+      "hostname": "timeout-normal"
+    },
+
+    "ipc": true,
+    "network": false,
+    "pid": false,
+
+    "mount": {
+      "enabled": true,
+      "private_tmp": false,
+      "tmp_size_mb": 32
+    }
+  }
+}
