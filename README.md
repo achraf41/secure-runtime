@@ -1,4 +1,3 @@
-````markdown
 # Secure Runtime
 
 A Linux application sandbox written in Rust that executes untrusted applications under a policy-driven security boundary.
