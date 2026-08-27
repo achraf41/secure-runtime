@@ -102,6 +102,7 @@ pub fn decide_file_access(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::policy::FileSystemPolicy;
 
     #[test]
     fn read_allowed_file_returns_allow() {
@@ -111,6 +112,7 @@ mod tests {
         std::fs::write("sandbox/input/data.txt", "hello").unwrap();     
         
         let policy = Policy {
+            policy_version: 1,
             app_id: "test_app".to_string(),
             app_path: "sandbox/test_app".to_string(),
             app_hash: "dummy_hash".to_string(),
@@ -121,6 +123,10 @@ mod tests {
                 exec_allow: vec![],
                 deny: vec![],
             },
+            resources: None,
+            network: None,
+            seccomp: None,
+            namespace: None,
         };
 
         let decision = decide_file_access("read", "sandbox/input/data.txt", &policy).unwrap();
@@ -134,6 +140,7 @@ mod tests {
         std::fs::create_dir_all("sandbox/denied").unwrap();
         std::fs::write("sandbox/denied/secret.txt", "secret").unwrap();
         let policy = Policy {
+            policy_version: 1,
             app_id: "test_app".to_string(),
             app_path: "sandbox/test_app".to_string(),
             app_hash: "dummy_hash".to_string(),
@@ -144,6 +151,10 @@ mod tests {
                 exec_allow: vec![],
                 deny: vec![],
             },
+            resources: None,
+            network: None,
+            seccomp: None,
+            namespace: None,
         };
         
         let decision = decide_file_access("read", "sandbox/denied/secret.txt", &policy).unwrap();
@@ -153,6 +164,7 @@ mod tests {
     fn write_allowed_file_returns_allow() {
         std::fs::create_dir_all("sandbox/output").unwrap();
         let policy = Policy {
+            policy_version: 1,
             app_id: "test_app".to_string(),
             app_path: "sandbox/test_app".to_string(),
             app_hash: "dummy_hash".to_string(),
@@ -163,6 +175,10 @@ mod tests {
                 exec_allow: vec![],
                 deny: vec![],
             },
+            resources: None,
+            network: None,
+            seccomp: None,
+            namespace: None,
         };
 
         let decision = decide_file_access("write", "sandbox/output/result.txt", &policy).unwrap();
@@ -172,6 +188,7 @@ mod tests {
     fn write_denied_file_returns_deny() {
         std::fs::create_dir_all("sandbox/denied").unwrap();
         let policy = Policy {
+            policy_version: 1,
             app_id: "test_app".to_string(),
             app_path: "sandbox/test_app".to_string(),
             app_hash: "dummy_hash".to_string(),
@@ -182,13 +199,16 @@ mod tests {
                 exec_allow: vec![],
                 deny: vec![],
             },
+            resources: None,
+            network: None,
+            seccomp: None,
+            namespace: None,
         };
         let decision = decide_file_access("write", "sandbox/denied/result.txt", &policy).unwrap();
         assert_eq!(decision, Decision::Deny);
     }
     
 }
-
 
 
 

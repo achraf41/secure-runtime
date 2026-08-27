@@ -1,15 +1,18 @@
 use std::time::{Duration, Instant};
 use std::sync::atomic::{AtomicI32, Ordering};
+use std::os::fd::OwnedFd;
 use nix::{
     errno::Errno,
+    fcntl::OFlag,
     sys::{
         signal::{kill, Signal,killpg},
         wait::{waitpid, WaitStatus,WaitPidFlag},
     },
-    unistd::{fork, setpgid, ForkResult, Pid, getpid},
+    unistd::{fork, pipe2, read, setpgid, write, ForkResult, Pid, getpid},
 };
+use crate::cgroup::CgroupStats;
 use crate::identity::VerifiedExecutable;
-use crate::logger::log_resource_usage;
+use crate::logger::EventLogger;
 use crate::privileges::{
     apply_no_new_privs,
     drop_all_capabilities,
@@ -35,7 +38,7 @@ use crate::cgroup::{
 use crate::executor::exec_verified;
 
 use crate::output::{
-     OutputState, OutputWriter, create_output_pipes, drain_available_output, redirect_output_to_pipes,
+     OutputState, OutputWriter, RunObserver, create_output_pipes, drain_available_output, redirect_output_to_pipes,
 };
 use crate::control::{
     ControlReader,
@@ -58,6 +61,87 @@ enum ApplicationResult {
     Exited(WaitStatus),
     TimedOut,
     OutputLimitExceeded,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RunnerOutcome {
+    Exited(i32),
+    Signaled(i32),
+    TimedOut,
+    OutputLimitExceeded,
+}
+
+#[derive(Debug)]
+pub struct RunAppResult {
+    pub launcher_status: WaitStatus,
+    pub outcome: RunnerOutcome,
+    pub output_bytes_observed: u64,
+    pub output_limit_bytes: Option<u64>,
+    pub cgroup_stats: Option<CgroupStats>,
+}
+
+struct OutcomeReader(OwnedFd);
+struct OutcomeWriter(OwnedFd);
+
+fn create_outcome_pipe() -> Result<(OutcomeReader, OutcomeWriter), String> {
+    let (reader, writer) = pipe2(OFlag::O_CLOEXEC)
+        .map_err(|error| format!("Failed to create runtime outcome pipe: {error}"))?;
+    Ok((OutcomeReader(reader), OutcomeWriter(writer)))
+}
+
+fn send_outcome(writer: &OutcomeWriter, result: &ApplicationResult) -> Result<(), String> {
+    let (tag, value) = match result {
+        ApplicationResult::Exited(WaitStatus::Exited(_, code)) => (1u8, *code),
+        ApplicationResult::Exited(WaitStatus::Signaled(_, signal, _)) => (2u8, *signal as i32),
+        ApplicationResult::TimedOut => (3u8, 0),
+        ApplicationResult::OutputLimitExceeded => (4u8, 0),
+        ApplicationResult::Exited(status) => {
+            return Err(format!("Unexpected final application status: {status:?}"));
+        }
+    };
+
+    let mut message = [0u8; 5];
+    message[0] = tag;
+    message[1..].copy_from_slice(&value.to_ne_bytes());
+    let mut written = 0;
+    while written < message.len() {
+        written += write(&writer.0, &message[written..])
+            .map_err(|error| format!("Failed to report application outcome: {error}"))?;
+    }
+    Ok(())
+}
+
+fn receive_outcome(reader: &OutcomeReader, launcher_status: WaitStatus) -> Result<RunnerOutcome, String> {
+    let mut message = [0u8; 5];
+    let mut received = 0;
+    while received < message.len() {
+        let count = read(&reader.0, &mut message[received..])
+            .map_err(|error| format!("Failed to read application outcome: {error}"))?;
+        if count == 0 {
+            break;
+        }
+        received += count;
+    }
+
+    if received == 0 {
+        return match launcher_status {
+            WaitStatus::Exited(_, code) => Ok(RunnerOutcome::Exited(code)),
+            WaitStatus::Signaled(_, signal, _) => Ok(RunnerOutcome::Signaled(signal as i32)),
+            status => Err(format!("Launcher returned unexpected status: {status:?}")),
+        };
+    }
+    if received != message.len() {
+        return Err("Application outcome message was incomplete".to_string());
+    }
+
+    let value = i32::from_ne_bytes(message[1..].try_into().expect("four-byte outcome value"));
+    match message[0] {
+        1 => Ok(RunnerOutcome::Exited(value)),
+        2 => Ok(RunnerOutcome::Signaled(value)),
+        3 => Ok(RunnerOutcome::TimedOut),
+        4 => Ok(RunnerOutcome::OutputLimitExceeded),
+        tag => Err(format!("Unknown application outcome tag: {tag}")),
+    }
 }
 
 
@@ -176,7 +260,7 @@ fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], con
                             }
                             WaitStatus::Signaled(pid, signal, core_dumped) => {
                                 
-                                println!("Reaped chiled {pid} terminated by {signal:?}, core dumped: {core_dumped} ");
+                                println!("Reaped child {pid} terminated by {signal:?}, core dumped: {core_dumped} ");
                                 if pid == main_child {
                                     main_status = Some(WaitStatus::Signaled(pid, signal, core_dumped));
                                     
@@ -294,7 +378,7 @@ fn exit_with_child_status(status: WaitStatus) -> ! {
     }
 }
 
-pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecutable) -> Result<WaitStatus, String> {
+pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecutable, observer: &dyn RunObserver, logger: &EventLogger) -> Result<RunAppResult, String> {
     
     let sandbox_cgroup = prepare_cgroup(&config.resources.cgroup)?;
 
@@ -302,12 +386,15 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
 
     let (control_reader, control_writer) = create_control_pipe()?;
 
+    let (outcome_reader, outcome_writer) = create_outcome_pipe()?;
+
     match unsafe { fork() }
         .map_err(|error| format!("Launcher fork failed: {error}"))?
     {
         ForkResult::Child => {
             drop(output_reader);
             drop(control_writer);
+            drop(outcome_reader);
             
             if let Some(cgroup_path) = &sandbox_cgroup {
                 move_process_to_cgroup(cgroup_path, getpid())
@@ -332,6 +419,10 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
                     } else {
                         wait_with_timeout(child,config.resources.timeout_seconds,&control_reader)?
                     };
+
+                    if !config.namespace.pid {
+                        send_outcome(&outcome_writer, &result)?;
+                    }
 
                     match result {
                         ApplicationResult::Exited(status) => {
@@ -366,7 +457,9 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
                 ForkResult::Child => {
                     drop(control_reader);
                     if config.namespace.pid {
-                        match run_pid1_supervisor(&executable, &cli.app_arg, &config, output_writer)? {
+                        let result = run_pid1_supervisor(&executable, &cli.app_arg, &config, output_writer)?;
+                        send_outcome(&outcome_writer, &result)?;
+                        match result {
                             ApplicationResult::Exited(status) => {
                                 exit_with_child_status(status)
                             }
@@ -413,6 +506,7 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
         ForkResult::Parent { child } => {
             drop(output_writer);
             drop(control_reader);
+            drop(outcome_writer);
 
             let mut output_state = OutputState::new();
             let mut launcher_status: Option<WaitStatus> = None;
@@ -430,7 +524,7 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
                     }
                 }
             
-                drain_available_output(&output_reader, &mut output_state, config.resources.max_output_bytes)?;
+                drain_available_output(&output_reader, &mut output_state, config.resources.max_output_bytes, observer)?;
                 if output_state.limit_exceeded && !output_limit_notified {
                     send_output_limit_exceeded(&control_writer)?;
                     output_limit_notified = true;
@@ -444,15 +538,30 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
 
             let status = launcher_status
                 .ok_or_else(|| "Mauncher exited without a stuts".to_string())?;
-            
-            if let Some(cgroup_path) = &sandbox_cgroup {
+
+            let reported_outcome = receive_outcome(&outcome_reader, status)?;
+            let outcome = if output_state.limit_exceeded {
+                RunnerOutcome::OutputLimitExceeded
+            } else {
+                reported_outcome
+            };
+            let cgroup_stats = if let Some(cgroup_path) = &sandbox_cgroup {
                 let stats = read_cgroup_stats(cgroup_path)?;
                 println!("Cgroup statistics: {stats:#?}");
-                log_resource_usage(&config.app_id, &stats)?;
+                logger.log_resource_usage(&config.app_id, &stats)?;
                 cleanup_cgroup(cgroup_path)?;
-            }
+                Some(stats)
+            } else {
+                None
+            };
 
-            Ok(status)
+            Ok(RunAppResult {
+                launcher_status: status,
+                outcome,
+                output_bytes_observed: output_state.total_bytes,
+                output_limit_bytes: config.resources.max_output_bytes,
+                cgroup_stats,
+            })
         }
     }
 }

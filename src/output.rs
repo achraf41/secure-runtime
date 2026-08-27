@@ -11,7 +11,42 @@ use nix::poll::{
     PollTimeout,
 };
 
-use std::io::{self,Read, Write};
+use std::io::{self, Write};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OutputStream {
+    Stdout,
+    Stderr,
+}
+
+pub trait RunObserver: Send + Sync {
+    fn output(&self, stream: OutputStream, bytes: &[u8]) -> Result<(), String>;
+}
+
+pub struct ConsoleObserver;
+
+impl RunObserver for ConsoleObserver {
+    fn output(&self, stream: OutputStream, bytes: &[u8]) -> Result<(), String> {
+        match stream {
+            OutputStream::Stdout => {
+                io::stdout()
+                    .write_all(bytes)
+                    .map_err(|error| format!("Failed to forward stdout: {error}"))?;
+                io::stdout()
+                    .flush()
+                    .map_err(|error| format!("Failed to flush stdout: {error}"))
+            }
+            OutputStream::Stderr => {
+                io::stderr()
+                    .write_all(bytes)
+                    .map_err(|error| format!("Failed to forward stderr: {error}"))?;
+                io::stderr()
+                    .flush()
+                    .map_err(|error| format!("Failed to flush stderr: {error}"))
+            }
+        }
+    }
+}
 
 pub struct OutputState {
     pub stdout_open: bool,
@@ -74,7 +109,7 @@ pub fn redirect_output_to_pipes(writer: &OutputWriter) -> Result<(),String> {
     Ok(())
 }
 
-pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState, max_output_bytes: Option<u64>) -> Result<(), String> {
+pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState, max_output_bytes: Option<u64>, observer: &dyn RunObserver) -> Result<(), String> {
 
     let mut poll_fds = [
         PollFd::new(reader.stdout.as_fd(), PollFlags::POLLIN | PollFlags::POLLHUP),
@@ -118,13 +153,7 @@ pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState, ma
                     };
 
                     if bytes_to_forward > 0 {
-                        io::stdout()
-                            .write_all(&buffer[..bytes_to_forward])
-                            .map_err(|error| format!("Failed to forward stdout: {error}"))?;
-
-                        io::stdout()
-                            .flush()
-                            .map_err(|error| format!("Failed to flush stdout: {error}"))?;
+                        observer.output(OutputStream::Stdout, &buffer[..bytes_to_forward])?;
                     }
 
                     if let Some(limit) = max_output_bytes {
@@ -172,13 +201,7 @@ pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState, ma
                     };
 
                     if bytes_to_forward > 0 {
-                        io::stderr()
-                            .write_all(&buffer[..bytes_to_forward])
-                            .map_err(|error| format!("Failed to forward stderr: {error}"))?;
-
-                        io::stderr()
-                            .flush()
-                            .map_err(|error| format!("Failed to flush stderr: {error}"))?;
+                        observer.output(OutputStream::Stderr, &buffer[..bytes_to_forward])?;
                     }
 
                     if let Some(limit) = max_output_bytes {

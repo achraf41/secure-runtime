@@ -1,8 +1,7 @@
 use std::path::PathBuf;
 use rlimit::{setrlimit, Resource};
-use serde_json::Value::Null;
 
-use crate::{cgroup, namespaces, policy::Policy};
+use crate::policy::Policy;
 
 use landlock::{
     ABI, Access, AccessFs, AccessNet, NetPort, Ruleset, RulesetAttr, RulesetCreatedAttr, RulesetStatus, path_beneath_rules,
@@ -201,7 +200,6 @@ pub fn prepare_sandbox(policy: &Policy) -> Result<SandboxConfig,String> {
                 .ok_or_else(|| "max output is too large".to_string()))
                 .transpose()?;
 
-            let timeout = resource_policy.timeout_seconds.unwrap_or(0);
             let rlimit = match &resource_policy.rlimit {
                 Some(rlimit) => RlimitConfig {
                     enabled: rlimit.enabled.unwrap_or(false),
@@ -486,7 +484,6 @@ pub fn apply_resource_limits(config: &RlimitConfig) -> Result<(),String> {
 
     Ok(())
 }
-
 
 
 

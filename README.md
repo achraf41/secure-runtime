@@ -614,6 +614,36 @@ A failure or weakness in one layer should therefore still encounter additional r
 
 ---
 
+## Desktop Application
+
+The repository includes a Tauri desktop dashboard under `desktop/`. It provides file
+pickers for an executable and JSON policy, streams sandboxed stdout and stderr, and
+shows normalized execution outcomes, runtime limits, and final cgroup statistics.
+
+The desktop stack is Tauri 2 with a Rust backend and a React + TypeScript frontend.
+It calls the same shared secure-runtime library used by the command-line application.
+
+Run the desktop application in development mode:
+
+```bash
+cd desktop
+npm install
+npm run tauri dev
+```
+
+Build production packages:
+
+```bash
+cd desktop
+npm install
+npm run tauri build
+```
+
+Generated installers and bundles are written under
+`desktop/src-tauri/target/release/bundle/`.
+
+---
+
 ## Current Project Status
 
 Implemented:

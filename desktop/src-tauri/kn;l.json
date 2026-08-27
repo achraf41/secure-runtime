@@ -1,0 +1,19 @@
+{
+  "policy_version": 1,
+  "app_id": "kn;l",
+  "app_path": "/home/achraf/project/secure-runtime/test_apps/output_test.sh",
+  "app_hash": "50ad261909bc65cc85378eaefb0d4076156def92fb065a5c3cbb14776b7ad84c",
+  "default_action": "deny",
+  "filesystem": {
+    "read_allow": [
+      "/home/achraf/project/secure-runtime/policies"
+    ],
+    "write_allow": [],
+    "exec_allow": [],
+    "deny": []
+  },
+  "resources": null,
+  "network": null,
+  "seccomp": null,
+  "namespace": null
+}

@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use libseccomp::ScmpSyscall;
 
+pub const SUPPORTED_POLICY_VERSION: u32 = 1;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UtsPolicy {
     pub enabled: Option<bool>,
@@ -116,18 +118,22 @@ pub fn load_policy(path: &str) -> Result<Policy, String> {
     
    
     validate_policy(&policy)?;
-    validate_seccomp_names(&policy)?;
-    validate_hostname(&policy)?;
-    validate_mount_policy(&policy)?;
 
     return Ok(policy);
 }
 
 
-fn validate_policy(policy: &Policy) -> Result<(),String> {
+pub fn validate_policy(policy: &Policy) -> Result<(), String> {
+    validate_policy_fields(policy)?;
+    validate_seccomp_names(policy)?;
+    validate_hostname(policy)?;
+    validate_mount_policy(policy)
+}
+
+fn validate_policy_fields(policy: &Policy) -> Result<(),String> {
     
-     if policy.policy_version != 1 {
-        return Err(format!("Unsupported policy version: {}. Supported version: 1",policy.policy_version))
+     if policy.policy_version != SUPPORTED_POLICY_VERSION {
+        return Err(format!("Unsupported policy version: {}. Supported version: {}",policy.policy_version, SUPPORTED_POLICY_VERSION))
     }
 
     if !policy.default_action.eq("allow") && !policy.default_action.eq("deny") {
