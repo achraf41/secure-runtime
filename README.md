@@ -1,7 +1,3 @@
-Yes. At this point the README should be rewritten almost completely because the project has moved far beyond the early prototype.
-
-I’d replace the current `README.md` with something like this:
-
 ````markdown
 # Secure Runtime
 
@@ -49,13 +45,7 @@ execveat(..., AT_EMPTY_PATH)
 
 instead of reopening the executable by pathname after verification.
 
-This protects against an attacker replacing the executable between:
-
-```text
-verification
-     ↓
-execution
-```
+This protects against an attacker replacing the executable between verification and execution.
 
 ---
 
@@ -136,8 +126,6 @@ A dedicated PID 1 supervisor is responsible for:
 ## Mount Isolation
 
 The runtime can create a private mount namespace.
-
-Supported features include:
 
 ### Private `/tmp`
 
@@ -669,7 +657,7 @@ Implemented:
 
 Possible future improvements include:
 
-* stronger policy schema/version management
+* stronger policy schema and version management
 * automated integration tests
 * expanded seccomp profiles
 * richer security-event logging
@@ -698,21 +686,5 @@ Software Engineering & Cybersecurity student
 
 GitHub: [@achraf41](https://github.com/achraf41)
 
-````
-
-This version is much more representative of what the project has become.
-
-I’d also recommend that when you push this README, we create a small `docs/` directory later with separate documents such as:
-
-```text
-docs/
-├── ARCHITECTURE.md
-├── SECURITY_MODEL.md
-├── POLICY.md
-├── CGROUPS.md
-└── THREAT_MODEL.md
-````
-
-That way the README stays readable while the deeper technical design—especially the multi-process architecture, PID1 behavior, TOCTOU protection, and control/output pipes—can be documented properly.
-
-I couldn't reliably fetch the current repository contents from GitHub from this environment, so this draft is based on the current implementation we've developed together rather than a line-by-line edit of the old README.
+```
+```
