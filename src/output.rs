@@ -75,8 +75,6 @@ pub fn redirect_output_to_pipes(writer: &OutputWriter) -> Result<(),String> {
 }
 
 pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState, max_output_bytes: Option<u64>) -> Result<(), String> {
-    
-
 
     let mut poll_fds = [
         PollFd::new(reader.stdout.as_fd(), PollFlags::POLLIN | PollFlags::POLLHUP),
@@ -102,27 +100,43 @@ pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState, ma
                     state.stdout_open = false;
                 } else {
                     
+                    let previous_total = state.total_bytes;
+
                     state.total_bytes = state
                         .total_bytes
                         .checked_add(bytes_read as u64)
                         .ok_or_else(|| "Application output byte counter overflow".to_string())?;
 
+                    let bytes_to_forward = match max_output_bytes {
+                        Some(limit) => {
+
+                            let remaining = limit.saturating_sub(previous_total);
+                            std::cmp::min(bytes_read,remaining as usize,)
+                        }
+
+                        None => bytes_read,
+                    };
+
+                    if bytes_to_forward > 0 {
+                        io::stdout()
+                            .write_all(&buffer[..bytes_to_forward])
+                            .map_err(|error| format!("Failed to forward stdout: {error}"))?;
+
+                        io::stdout()
+                            .flush()
+                            .map_err(|error| format!("Failed to flush stdout: {error}"))?;
+                    }
+
                     if let Some(limit) = max_output_bytes {
-                    
-                        if !state.limit_exceeded && state.total_bytes > limit {
+                        if !state.limit_exceeded
+                            && state.total_bytes > limit
+                        {
                             state.limit_exceeded = true;
 
                             eprintln!("\nApplication output limit exceeded: {} > {} bytes",state.total_bytes,limit);
                         }
                     }
-                    
-                    io::stdout()
-                        .write_all(&buffer[..bytes_read])
-                        .map_err(|error| format!("Failed to forward stdout: {error}"))?;
 
-                    io::stdout()
-                        .flush()
-                        .map_err(|error| format!("Failed to flush stdout: {error}"))?;
                 }
             }
         }
@@ -140,26 +154,42 @@ pub fn drain_available_output(reader: &OutputReader, state: &mut OutputState, ma
                 if bytes_read == 0 {
                     state.stderr_open = false;
                 } else {
+                    let previous_total = state.total_bytes;
+
                     state.total_bytes = state
                         .total_bytes
                         .checked_add(bytes_read as u64)
                         .ok_or_else(|| "Application output byte counter overflow".to_string())?;
 
+                    let bytes_to_forward = match max_output_bytes {
+                        Some(limit) => {
+                            let remaining = limit.saturating_sub(previous_total);
+
+                            std::cmp::min(bytes_read,remaining as usize,)
+                        }
+
+                        None => bytes_read,
+                    };
+
+                    if bytes_to_forward > 0 {
+                        io::stderr()
+                            .write_all(&buffer[..bytes_to_forward])
+                            .map_err(|error| format!("Failed to forward stderr: {error}"))?;
+
+                        io::stderr()
+                            .flush()
+                            .map_err(|error| format!("Failed to flush stderr: {error}"))?;
+                    }
+
                     if let Some(limit) = max_output_bytes {
-                        if !state.limit_exceeded && state.total_bytes > limit {
-                            
+                        if !state.limit_exceeded
+                            && state.total_bytes > limit
+                        {
                             state.limit_exceeded = true;
+
                             eprintln!("\nApplication output limit exceeded: {} > {} bytes",state.total_bytes,limit);
                         }
                     }
-
-                    io::stderr()
-                        .write_all(&buffer[..bytes_read])
-                        .map_err(|error| format!("Failed to forward stderr: {error}"))?;
-
-                    io::stderr()
-                        .flush()
-                        .map_err(|error| format!("Failed to flush stderr: {error}"))?;
                 }
             }
         }

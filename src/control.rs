@@ -19,28 +19,12 @@ pub struct ControlWriter {
 }
 
 
-pub fn create_control_pipe()
-    -> Result<(ControlReader, ControlWriter), String>
-{
-    let (read_fd, write_fd) =
-        pipe2(
-            OFlag::O_CLOEXEC
-                | OFlag::O_NONBLOCK
-        )
-        .map_err(|error| {
-            format!(
-                "Failed to create runtime control pipe: {error}"
-            )
-        })?;
+pub fn create_control_pipe() -> Result<(ControlReader, ControlWriter), String> {
+    
+    let (read_fd, write_fd) = pipe2(OFlag::O_CLOEXEC | OFlag::O_NONBLOCK)
+        .map_err(|error| format!("Failed to create runtime control pipe: {error}"))?;
 
-    Ok((
-        ControlReader {
-            fd: read_fd,
-        },
-        ControlWriter {
-            fd: write_fd,
-        },
-    ))
+    Ok((ControlReader {fd: read_fd},ControlWriter {fd: write_fd},))
 }
 
 

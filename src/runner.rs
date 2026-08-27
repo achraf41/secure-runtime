@@ -50,7 +50,8 @@ extern "C" fn handle_signal(signal: libc::c_int) {
     RECEIVED_SIGNAL.store(signal, Ordering::SeqCst);
 }
 
-
+const SUPERVISOR_POLL_INTERVAL: Duration =
+    Duration::from_millis(5);
 
 #[derive(Debug)]
 enum ApplicationResult {
@@ -211,7 +212,7 @@ fn run_pid1_supervisor(executable: &VerifiedExecutable, app_args: &[String], con
                                         sigkill_sent = true;
                                     }
                                 }
-                                std::thread::sleep(Duration::from_millis(50));
+                                std::thread::sleep(SUPERVISOR_POLL_INTERVAL);
                             }
                             other => {
                                 
@@ -457,67 +458,45 @@ pub fn run_app(cli: &CliArgs, config: SandboxConfig, executable: VerifiedExecuta
 }
 
 
-fn wait_for_pid1(
-    pid1: Pid,
-    control_reader: &ControlReader,
-) -> Result<ApplicationResult, String> {
+fn wait_for_pid1(pid1: Pid,control_reader: &ControlReader) -> Result<ApplicationResult, String> {
+    
     let mut output_limit_triggered = false;
     let mut shutdown_deadline: Option<Instant> = None;
     let mut sigkill_sent = false;
 
     loop {
-        if !output_limit_triggered
-            && output_limit_requested(control_reader)?
-        {
+        if !output_limit_triggered && output_limit_requested(control_reader)? {
+            
             output_limit_triggered = true;
+            eprintln!("Application output limit exceeded");
 
-            eprintln!(
-                "Application output limit exceeded"
-            );
-
-            match kill(
-                pid1,
-                Signal::SIGTERM,
-            ) {
+            match kill(pid1,Signal::SIGTERM) {
                 Ok(())
                 | Err(Errno::ESRCH) => {}
 
                 Err(error) => {
-                    return Err(format!(
-                        "Failed to notify PID1 about output limit: {error}"
-                    ));
+                    return Err(format!("Failed to notify PID1 about output limit: {error}"));
                 }
             }
 
             shutdown_deadline = Some(
-                Instant::now()
-                    + Duration::from_secs(3)
+                Instant::now() + Duration::from_secs(3)
             );
         }
 
-        match waitpid(
-            pid1,
-            Some(WaitPidFlag::WNOHANG),
-        ) {
+        match waitpid(pid1,Some(WaitPidFlag::WNOHANG)) {
             Ok(WaitStatus::StillAlive) => {
-                if output_limit_triggered
-                    && !sigkill_sent
-                {
-                    if let Some(deadline) =
-                        shutdown_deadline
-                    {
+                
+                if output_limit_triggered && !sigkill_sent {
+                    if let Some(deadline) = shutdown_deadline {
                         if Instant::now() >= deadline {
-                            match kill(
-                                pid1,
-                                Signal::SIGKILL,
-                            ) {
+                            
+                            match kill(pid1,Signal::SIGKILL) {
                                 Ok(())
                                 | Err(Errno::ESRCH) => {}
 
                                 Err(error) => {
-                                    return Err(format!(
-                                        "Failed to kill PID1 after output limit: {error}"
-                                    ));
+                                    return Err(format!("Failed to kill PID1 after output limit: {error}"));
                                 }
                             }
 
@@ -526,21 +505,15 @@ fn wait_for_pid1(
                     }
                 }
 
-                std::thread::sleep(
-                    Duration::from_millis(50)
-                );
+                std::thread::sleep(SUPERVISOR_POLL_INTERVAL);
             }
 
             Ok(status) => {
                 if output_limit_triggered {
-                    return Ok(
-                        ApplicationResult::OutputLimitExceeded
-                    );
+                    return Ok(ApplicationResult::OutputLimitExceeded);
                 }
 
-                return Ok(
-                    ApplicationResult::Exited(status)
-                );
+                return Ok(ApplicationResult::Exited(status));
             }
 
             Err(Errno::EINTR) => {
@@ -548,13 +521,14 @@ fn wait_for_pid1(
             }
 
             Err(error) => {
-                return Err(format!(
-                    "PID1 waitpid failed: {error}"
-                ));
+                return Err(format!("PID1 waitpid failed: {error}"));
             }
         }
     }
 }
+
+
+
 fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>,control_reader: &ControlReader) -> Result<ApplicationResult, String> {
     let execution_deadline = timeout_seconds
         .map(|seconds| Instant::now() + Duration::from_secs(seconds));
@@ -661,7 +635,7 @@ fn wait_with_timeout(main_child: Pid,timeout_seconds: Option<u64>,control_reader
                     }
                 }
 
-                std::thread::sleep(Duration::from_millis(50));
+                std::thread::sleep(SUPERVISOR_POLL_INTERVAL);
             }
 
             Ok(other) => {

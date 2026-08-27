@@ -2,7 +2,7 @@
   "policy_version": 1,
   "app_id": "output_test",
   "app_path": "/home/achraf/project/secure-runtime/test_apps/output_test.sh",
-  "app_hash": "83bd67fb2cb2d7da3983ecc1bca85e4d04605b288b9811ef6c65b88e239f0534",
+  "app_hash": "50ad261909bc65cc85378eaefb0d4076156def92fb065a5c3cbb14776b7ad84c",
   "default_action": "deny",
 
   "filesystem": {
