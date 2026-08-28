@@ -1,0 +1,66 @@
+{
+  "policy_version": 1,
+  "app_id": "desktop_demo",
+  "app_path": "/home/achraf/project/secure-runtime/test_apps/desktop_demo.sh",
+  "app_hash": "e8d38c220ad9b86c77ff08f913695780dd2d0ba78d4287ae7473008cd2a5bcd8",
+  "default_action": "deny",
+
+  "filesystem": {
+    "read_allow": [
+      "/usr/bin",
+      "/usr/lib",
+      "/lib",
+      "/lib64",
+      "/etc/ld.so.cache",
+      "/dev/null",
+      "/home/achraf/project/secure-runtime"
+    ],
+    "write_allow": [
+      "/dev/null",
+      "/home/achraf/project/secure-runtime"
+    ],
+    "exec_allow": [
+      "/usr/bin",
+      "/home/achraf/project/secure-runtime/test_apps/desktop_demo.sh"
+    ],
+    "deny": []
+  },
+
+  "resources": {
+    "timeout_seconds": 10,
+    "max_output_kb": 16,
+    "memory_mb": 128,
+
+    "rlimit": {
+      "enabled": true,
+      "cpu_seconds": 5,
+      "max_file_size_mb": 4
+    },
+
+    "cgroup": {
+      "enabled": false,
+      "cpu_percent": 50
+    }
+  },
+
+  "network": {
+    "connect_tcp": [],
+    "bind_tcp": []
+  },
+
+  "seccomp": {
+    "profile": "baseline",
+    "deny": []
+  },
+
+  "namespace": {
+    "ipc": false,
+    "network": false,
+    "pid": false,
+    "mount": {
+      "enabled": false,
+      "private_tmp": false,
+      "tmp_size_mb": null
+    }
+  }
+}
